@@ -1,11 +1,21 @@
 """Service layer for KOL data operations."""
 import json
+import logging
 from pathlib import Path
 from typing import List, Optional, Dict
 from collections import Counter
 
 from app.models.kol import KOL
 from app.models.stats import KOLStats, CountryCount, HighestCitationsPerPublicationKOL
+
+# Import Excel parser (optional dependency)
+try:
+    from app.services.excel_parser import ExcelParser
+    EXCEL_AVAILABLE = True
+except ImportError:
+    EXCEL_AVAILABLE = False
+
+logger = logging.getLogger(__name__)
 
 
 class KOLService:
@@ -15,22 +25,75 @@ class KOLService:
     Data is loaded once at initialization and cached in memory.
     """
     
-    def __init__(self, data_path: str):
-        """Load KOL data from JSON file."""
+    def __init__(self, data_path: str, use_excel: bool = False):
+        """
+        Load KOL data from JSON or Excel file.
+        
+        BONUS FEATURE: Excel parsing support
+        
+        Args:
+            data_path: Path to JSON or Excel file
+            use_excel: If True, attempt to parse as Excel file
+        """
         self._kols: List[KOL] = []
-        self._load_data(data_path)
+        self._load_data(data_path, use_excel)
     
-    def _load_data(self, data_path: str) -> None:
-        """Load and parse KOL data from JSON file."""
+    def _load_data(self, data_path: str, use_excel: bool = False) -> None:
+        """
+        Load and parse KOL data from JSON or Excel file.
+        
+        BONUS FEATURE: Excel parsing with automatic format detection
+        
+        Strategy:
+        1. If use_excel=True or file extension is .xlsx, try Excel parsing
+        2. If Excel fails or not requested, load from JSON
+        3. Validate all records with Pydantic models
+        """
         path = Path(data_path)
-        if not path.exists():
-            raise FileNotFoundError(f"Data file not found: {data_path}")
+        raw_data = []
         
-        with open(path, 'r', encoding='utf-8') as f:
-            raw_data = json.load(f)
+        # Determine if we should try Excel
+        should_try_excel = use_excel or path.suffix.lower() in ['.xlsx', '.xls']
         
-        # Parse and validate each KOL record
+        # Try Excel parsing if requested or file is .xlsx
+        if should_try_excel and EXCEL_AVAILABLE:
+            # Look for Excel file
+            excel_path = path if path.suffix.lower() in ['.xlsx', '.xls'] else None
+            
+            if not excel_path:
+                # Try to find .xlsx file with similar name
+                excel_candidates = [
+                    path.parent / f"{path.stem}.xlsx",
+                    path.parent / "mockKolData.xlsx",
+                    path.parent / "Vitiligo_kol_csv_29_07_2024_drug_and_kol_standardized.xlsx",
+                ]
+                for candidate in excel_candidates:
+                    if candidate.exists():
+                        excel_path = candidate
+                        break
+            
+            if excel_path and excel_path.exists():
+                try:
+                    logger.info(f"Attempting to load data from Excel: {excel_path}")
+                    raw_data = ExcelParser.parse_excel_file(str(excel_path))
+                    logger.info(f"Successfully loaded {len(raw_data)} records from Excel")
+                except Exception as e:
+                    logger.warning(f"Failed to load Excel file: {e}. Falling back to JSON.")
+                    raw_data = []
+        
+        # Fallback to JSON if Excel failed or wasn't attempted
+        if not raw_data:
+            if not path.exists():
+                raise FileNotFoundError(f"Data file not found: {data_path}")
+            
+            logger.info(f"Loading data from JSON: {path}")
+            with open(path, 'r', encoding='utf-8') as f:
+                raw_data = json.load(f)
+            logger.info(f"Successfully loaded {len(raw_data)} records from JSON")
+        
+        # Parse and validate each KOL record with Pydantic
         self._kols = [KOL(**record) for record in raw_data]
+        logger.info(f"Validated {len(self._kols)} KOL records")
     
     def get_all_kols(self) -> List[KOL]:
         """Return all KOLs."""

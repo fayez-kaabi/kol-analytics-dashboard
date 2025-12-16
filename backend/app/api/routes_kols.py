@@ -12,7 +12,8 @@ from app.core.config import settings
 router = APIRouter(prefix="/api/kols", tags=["kols"])
 
 # Initialize service (singleton pattern - loaded once at startup)
-kol_service = KOLService(settings.DATA_FILE)
+# BONUS FEATURE: Excel parsing enabled via settings
+kol_service = KOLService(settings.DATA_FILE, use_excel=settings.USE_EXCEL)
 
 
 @router.get("", response_model=List[KOL])

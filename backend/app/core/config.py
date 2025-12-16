@@ -1,4 +1,5 @@
 """Application configuration."""
+import os
 from pathlib import Path
 
 
@@ -17,6 +18,10 @@ class Settings:
     
     # Data file path
     DATA_FILE: str = str(Path(__file__).parent.parent / "data" / "mockKolData.json")
+    
+    # BONUS FEATURE: Excel parsing support
+    # Set USE_EXCEL=true environment variable to enable Excel parsing
+    USE_EXCEL: bool = os.getenv("USE_EXCEL", "false").lower() == "true"
 
 
 settings = Settings()
