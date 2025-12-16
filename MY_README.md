@@ -63,13 +63,15 @@ npm run dev
 - ✅ **Loading/error states** throughout
 - ✅ **TypeScript strict mode** (no `any`, all types defined)
 - ✅ **Responsive design** with Tailwind CSS
+- ✅ **Data source toggle** - switch between real (4017) and mock (50) data
 
 ### API Endpoints
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/api/kols` | List all KOLs (with filtering, sorting, pagination) |
-| GET | `/api/kols/{id}` | Single KOL by ID |
-| GET | `/api/kols/stats` | Aggregate statistics |
+| GET | `/api/kols?source=excel` | List KOLs (with filtering, sorting, pagination) |
+| GET | `/api/kols/{id}?source=excel` | Single KOL by ID |
+| GET | `/api/kols/stats?source=excel` | Aggregate statistics |
+| GET | `/api/kols/sources` | Available data sources |
 | GET | `/health` | Health check |
 
 ## 🎁 BONUS Features (ALL Implemented!)
@@ -82,22 +84,25 @@ npm run dev
 - Frontend pagination (7 rows per page)
 
 ### 2. ✅ Additional Visualizations
-- **Pie chart** - KOL distribution by expertise
-- **Scatter plot** - Publications vs Citations (bubble size = H-Index)
+- **Pie chart** - KOL distribution by expertise (top 8 + "Other")
+- **Scatter plot** - Publications vs Citations (with empty state for Excel data)
 
 ### 3. ✅ Backend Query Parameters
 ```
-GET /api/kols?country=Japan&sort_by=citations&order=desc&limit=10
+GET /api/kols?source=excel&country=China&sort_by=publications_count&order=desc&limit=10
 ```
+- `source` - Data source: excel (4017 KOLs) or mock (50 KOLs)
 - `country`, `expertise_area` - Filtering
 - `search` - Text search
 - `sort_by`, `order` - Sorting
 - `limit`, `offset` - Pagination
 
-### 4. ✅ Excel Parsing (DEFAULT)
-- **Enabled by default** - loads 200 real KOLs from Vitiligo Excel
+### 4. ✅ Excel Parsing (4017 Real KOLs!)
+- **Loads 4,017 real researchers** from Vitiligo Excel file
 - Smart column mapping from Authors sheet
-- Set `USE_EXCEL=false` to use mock JSON data instead
+- **Toggle in dashboard header** to switch between:
+  - 📊 **Real Data** - 4017 KOLs (no citations)
+  - 🧪 **Mock Data** - 50 KOLs (with citations)
 
 ### 5. ✅ Raw D3.js Implementation
 - Manual SVG creation (no wrapper library)
@@ -108,7 +113,8 @@ GET /api/kols?country=Japan&sort_by=citations&order=desc&limit=10
 ## 🔍 Data Analysis
 
 ### Highest Citations-Per-Publication KOL
-The system identifies the KOL with the highest ratio (citations / publications). A high ratio indicates impactful research where each publication receives substantial attention.
+The system identifies the KOL with the highest ratio (citations / publications). 
+*Note: Only available with Mock Data - Excel file doesn't include citations.*
 
 ### Data Quality Analysis
 The system automatically detects and reports:
@@ -116,8 +122,6 @@ The system automatically detects and reports:
 - Suspicious zeros (0 publications but positive h-index)
 - Empty string fields (missing names, countries)
 - Duplicate IDs
-
-*Note: The mock data is clean, so you'll see "✓ No significant data quality issues detected" - this means the analyzer is working correctly!*
 
 ## 🛠 Technology Stack
 
@@ -128,13 +132,13 @@ The system automatically detects and reports:
 
 | Decision | Tradeoff |
 |----------|----------|
-| **In-memory data** | Fast for 50 records, but won't scale to 10K+ KOLs. Would use PostgreSQL in production. |
-| **Service Layer Pattern** | More files/boilerplate, but business logic is testable and separated from routes. |
-| **Context + Hooks** | Simpler than Redux, but would need React Query for complex caching/invalidation. |
-| **camelCase API responses** | Frontend types match exactly, but differs from Python snake_case convention. |
-| **D3.js for one chart only** | Demonstrates raw D3 skill while keeping other charts simple with Recharts. |
-| **No database** | Faster prototype, but no persistence. Would add SQLAlchemy + migrations for production. |
-| **No tests** | Prioritized features over coverage. Would add pytest + Vitest with more time. |
+| **In-memory data** | Fast for 4000+ records, but won't scale to 100K+. Would use PostgreSQL. |
+| **Service Layer Pattern** | More files/boilerplate, but business logic is testable. |
+| **Context + Hooks** | Simpler than Redux, but would need React Query for complex caching. |
+| **camelCase API responses** | Frontend types match exactly, differs from Python convention. |
+| **D3.js for bar chart only** | Demonstrates raw D3 skill while keeping other charts simple. |
+| **Dual data sources** | Shows both real (Excel) and sample (JSON) data for comparison. |
+| **No tests** | Prioritized features over coverage. Would add pytest + Vitest. |
 
 ## 🐛 Troubleshooting
 
@@ -157,8 +161,8 @@ npm install
 
 - Backend: ~1.5 hours
 - Frontend: ~2 hours  
-- Bonus features: ~1 hour
-- **Total: ~4.5 hours**
+- Bonus features: ~1.5 hours
+- **Total: ~5 hours**
 
 ## 📄 What I'd Improve
 
@@ -167,6 +171,7 @@ npm install
 - Docker deployment
 - Authentication
 - Dark mode
+- Fetch citation data for Excel KOLs (from external API)
 
 ---
 
