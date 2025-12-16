@@ -8,7 +8,7 @@ import { useKols } from '../hooks/useKols';
 import { useKolStats } from '../hooks/useKolStats';
 import { useKolContext } from '../context/KolContext';
 import { StatCards } from '../components/StatCards';
-import { CountriesBarChart } from '../components/CountriesBarChart';
+import { CountriesBarChartD3 } from '../components/CountriesBarChartD3';
 import { ExpertisePieChart } from '../components/ExpertisePieChart';
 import { ScatterPlotChart } from '../components/ScatterPlotChart';
 import { KolTableWithSearch } from '../components/KolTableWithSearch';
@@ -74,9 +74,9 @@ export function Dashboard(): JSX.Element {
 
             {/* Visualizations */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-              {/* Top Countries Bar Chart */}
+              {/* Top Countries Bar Chart (BONUS: Raw D3.js implementation) */}
               {stats.top10_countries_by_kol_count.length > 0 && (
-                <CountriesBarChart data={stats.top10_countries_by_kol_count} />
+                <CountriesBarChartD3 data={stats.top10_countries_by_kol_count} />
               )}
               
               {/* Expertise Pie Chart (BONUS: Second visualization) */}
