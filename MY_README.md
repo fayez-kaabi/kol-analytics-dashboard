@@ -180,9 +180,22 @@ These insights help identify areas where data collection or validation could be 
   - `limit` & `offset` - Pagination support
 - **Full validation** and error handling for query parameters
 
-### 📝 Not Implemented (Optional)
-- [ ] **Excel parsing** - Currently uses JSON
-- [ ] **D3.js implementation** - Using Recharts (simpler, sufficient for this scope)
+### ✅ Excel Parsing
+- **Smart column mapping** - Automatically maps various Excel column names to JSON fields
+- **Data type conversion** - Numeric fields converted correctly
+- **Flexible sheet selection** - Finds data in common sheet names
+- **Automatic fallback** - Falls back to JSON if Excel parsing fails
+- **Environment control** - Enable via `USE_EXCEL=true`
+
+### ✅ Raw D3.js Implementation  
+- **Manual SVG creation** - No wrapper library, pure D3
+- **D3 scales and axes** - Proper scale construction and axis rendering
+- **Smooth transitions** - Animated bar entrance with easing
+- **Custom tooltips** - HTML tooltips with hover effects
+- **Responsive sizing** - Adapts to container width
+- **Professional styling** - Grid lines, rotated labels, hover effects
+
+### 📝 All BONUS Features Implemented! 🎉
 
 ### Additional Improvements (Given More Time)
 
