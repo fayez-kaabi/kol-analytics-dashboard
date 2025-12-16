@@ -3,8 +3,20 @@
  * BONUS FEATURE: Advanced filtering
  */
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import type { KOL } from '../types/kol';
+
+// Custom hook for debouncing values (better performance on search)
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedValue(value), delay);
+    return () => clearTimeout(timer); // Cleanup on value change
+  }, [value, delay]);
+
+  return debouncedValue;
+}
 
 interface KolTableWithSearchProps {
   kols: KOL[];
@@ -18,6 +30,7 @@ export function KolTableWithSearch({
   selectedKolId 
 }: KolTableWithSearchProps): JSX.Element {
   const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearchTerm = useDebounce(searchTerm, 300); // 300ms debounce
   const [countryFilter, setCountryFilter] = useState<string>('');
   const [expertiseFilter, setExpertiseFilter] = useState<string>('');
 
@@ -32,15 +45,15 @@ export function KolTableWithSearch({
     return Array.from(areas).sort();
   }, [kols]);
 
-  // Filter KOLs based on search and filters
+  // Filter KOLs based on search and filters (using debounced search for performance)
   const filteredKols = useMemo(() => {
     return kols.filter(kol => {
-      // Search filter (name, affiliation, country, expertise)
-      const matchesSearch = searchTerm === '' || 
-        kol.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        kol.affiliation.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        kol.country.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        kol.expertiseArea.toLowerCase().includes(searchTerm.toLowerCase());
+      // Search filter (name, affiliation, country, expertise) - uses debounced value
+      const matchesSearch = debouncedSearchTerm === '' || 
+        kol.name.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        kol.affiliation.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        kol.country.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
+        kol.expertiseArea.toLowerCase().includes(debouncedSearchTerm.toLowerCase());
 
       // Country filter
       const matchesCountry = countryFilter === '' || kol.country === countryFilter;
@@ -50,7 +63,7 @@ export function KolTableWithSearch({
 
       return matchesSearch && matchesCountry && matchesExpertise;
     });
-  }, [kols, searchTerm, countryFilter, expertiseFilter]);
+  }, [kols, debouncedSearchTerm, countryFilter, expertiseFilter]);
 
   const clearFilters = (): void => {
     setSearchTerm('');
@@ -58,7 +71,7 @@ export function KolTableWithSearch({
     setExpertiseFilter('');
   };
 
-  const hasActiveFilters = searchTerm !== '' || countryFilter !== '' || expertiseFilter !== '';
+  const hasActiveFilters = debouncedSearchTerm !== '' || countryFilter !== '' || expertiseFilter !== '';
 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden">
