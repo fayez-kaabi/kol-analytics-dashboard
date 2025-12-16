@@ -3,7 +3,6 @@
  * Fetches and displays comprehensive information.
  */
 
-import React from 'react';
 import { useKolById } from '../hooks/useKolById';
 
 interface KolDetailsProps {

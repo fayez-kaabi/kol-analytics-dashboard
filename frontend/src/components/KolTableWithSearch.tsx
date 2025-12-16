@@ -3,7 +3,7 @@
  * BONUS FEATURE: Advanced filtering
  */
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import type { KOL } from '../types/kol';
 
 interface KolTableWithSearchProps {

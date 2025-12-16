@@ -3,7 +3,6 @@
  * Uses Recharts library with interactive tooltips.
  */
 
-import React from 'react';
 import {
   BarChart,
   Bar,

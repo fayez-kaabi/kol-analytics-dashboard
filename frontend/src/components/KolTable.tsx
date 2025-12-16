@@ -3,7 +3,6 @@
  * Supports row selection for viewing details.
  */
 
-import React from 'react';
 import type { KOL } from '../types/kol';
 
 interface KolTableProps {

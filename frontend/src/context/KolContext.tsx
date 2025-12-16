@@ -3,7 +3,7 @@
  * Provides centralized state and data fetching logic.
  */
 
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
 import type { KOL, KOLStats } from '../types/kol';
 import { getAllKOLs, getKOLStats } from '../api/client';
 import { APIClientError } from '../api/client';

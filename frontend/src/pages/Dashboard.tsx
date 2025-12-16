@@ -3,7 +3,6 @@
  * Orchestrates all dashboard elements: stats, charts, and KOL list.
  */
 
-import React from 'react';
 import { useKols } from '../hooks/useKols';
 import { useKolStats } from '../hooks/useKolStats';
 import { useKolContext } from '../context/KolContext';

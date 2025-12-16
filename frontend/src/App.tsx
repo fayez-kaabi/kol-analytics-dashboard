@@ -3,7 +3,6 @@
  * Sets up context providers and routing.
  */
 
-import React from 'react';
 import { KolProvider } from './context/KolContext';
 import { Dashboard } from './pages/Dashboard';
 

@@ -3,7 +3,6 @@
  * Displays key metrics in a responsive grid layout.
  */
 
-import React from 'react';
 import type { KOLStats } from '../types/kol';
 
 interface StatCardsProps {
