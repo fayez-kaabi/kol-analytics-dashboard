@@ -108,11 +108,14 @@ GET /api/kols?country=Japan&sort_by=citations&order=desc&limit=10
 ### Highest Citations-Per-Publication KOL
 The system identifies the KOL with the highest ratio (citations / publications). A high ratio indicates impactful research where each publication receives substantial attention.
 
-### Data Quality Issues Detected
-- Missing numeric values
+### Data Quality Analysis
+The system automatically detects and reports:
+- Missing numeric values (null publications, citations, h-index)
 - Suspicious zeros (0 publications but positive h-index)
-- Empty string fields
+- Empty string fields (missing names, countries)
 - Duplicate IDs
+
+*Note: The mock data is clean, so you'll see "✓ No significant data quality issues detected" - this means the analyzer is working correctly!*
 
 ## 🛠 Technology Stack
 
