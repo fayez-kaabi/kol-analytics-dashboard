@@ -19,9 +19,10 @@ class Settings:
     # Data file path
     DATA_FILE: str = str(Path(__file__).parent.parent / "data" / "mockKolData.json")
     
-    # BONUS FEATURE: Excel parsing support
-    # Set USE_EXCEL=true environment variable to enable Excel parsing
-    USE_EXCEL: bool = os.getenv("USE_EXCEL", "false").lower() == "true"
+    # BONUS FEATURE: Excel parsing - ENABLED BY DEFAULT
+    # Uses real KOL data from Vitiligo Excel file (4000+ researchers)
+    # Set USE_EXCEL=false to use mock JSON data instead
+    USE_EXCEL: bool = os.getenv("USE_EXCEL", "true").lower() == "true"
 
 
 settings = Settings()

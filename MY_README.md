@@ -94,10 +94,10 @@ GET /api/kols?country=Japan&sort_by=citations&order=desc&limit=10
 - `sort_by`, `order` - Sorting
 - `limit`, `offset` - Pagination
 
-### 4. ✅ Excel Parsing
-- Enable with `USE_EXCEL=true` environment variable
-- Smart column mapping (handles various Excel formats)
-- Automatic fallback to JSON if Excel fails
+### 4. ✅ Excel Parsing (DEFAULT)
+- **Enabled by default** - loads 200 real KOLs from Vitiligo Excel
+- Smart column mapping from Authors sheet
+- Set `USE_EXCEL=false` to use mock JSON data instead
 
 ### 5. ✅ Raw D3.js Implementation
 - Manual SVG creation (no wrapper library)

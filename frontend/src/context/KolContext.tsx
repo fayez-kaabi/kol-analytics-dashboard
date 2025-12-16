@@ -1,12 +1,14 @@
 /**
  * Global context for KOL data management.
  * Provides centralized state and data fetching logic.
+ * 
+ * BONUS: Supports toggling between Excel (real) and Mock (sample) data.
  */
 
 import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
 import type { KOL, KOLStats } from '../types/kol';
-import { getAllKOLs, getKOLStats } from '../api/client';
-import { APIClientError } from '../api/client';
+import { getAllKOLs, getKOLStats, getDataSources, APIClientError } from '../api/client';
+import type { DataSource, DataSourceInfo } from '../api/client';
 
 interface KolContextState {
   kols: KOL[];
@@ -14,10 +16,13 @@ interface KolContextState {
   selectedKolId: string | null;
   loading: boolean;
   error: string | null;
+  dataSource: DataSource;
+  dataSources: DataSourceInfo[];
   fetchKols: () => Promise<void>;
   fetchStats: () => Promise<void>;
   refresh: () => Promise<void>;
   setSelectedKolId: (id: string | null) => void;
+  setDataSource: (source: DataSource) => void;
 }
 
 const KolContext = createContext<KolContextState | undefined>(undefined);
@@ -32,12 +37,14 @@ export function KolProvider({ children }: KolProviderProps): JSX.Element {
   const [selectedKolId, setSelectedKolId] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [dataSource, setDataSourceState] = useState<DataSource>('excel');
+  const [dataSources, setDataSources] = useState<DataSourceInfo[]>([]);
 
   const fetchKols = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await getAllKOLs();
+      const data = await getAllKOLs(dataSource);
       setKols(data);
     } catch (err) {
       const errorMessage =
@@ -49,13 +56,13 @@ export function KolProvider({ children }: KolProviderProps): JSX.Element {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [dataSource]);
 
   const fetchStats = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await getKOLStats();
+      const data = await getKOLStats(dataSource);
       setStats(data);
     } catch (err) {
       const errorMessage =
@@ -67,11 +74,25 @@ export function KolProvider({ children }: KolProviderProps): JSX.Element {
     } finally {
       setLoading(false);
     }
+  }, [dataSource]);
+
+  const fetchDataSources = useCallback(async () => {
+    try {
+      const response = await getDataSources();
+      setDataSources(response.sources);
+    } catch (err) {
+      console.error('Error fetching data sources:', err);
+    }
   }, []);
 
   const refresh = useCallback(async () => {
-    await Promise.all([fetchKols(), fetchStats()]);
-  }, [fetchKols, fetchStats]);
+    await Promise.all([fetchKols(), fetchStats(), fetchDataSources()]);
+  }, [fetchKols, fetchStats, fetchDataSources]);
+
+  const setDataSource = useCallback((source: DataSource) => {
+    setDataSourceState(source);
+    setSelectedKolId(null); // Clear selection when switching sources
+  }, []);
 
   const value: KolContextState = {
     kols,
@@ -79,10 +100,13 @@ export function KolProvider({ children }: KolProviderProps): JSX.Element {
     selectedKolId,
     loading,
     error,
+    dataSource,
+    dataSources,
     fetchKols,
     fetchStats,
     refresh,
     setSelectedKolId,
+    setDataSource,
   };
 
   return <KolContext.Provider value={value}>{children}</KolContext.Provider>;
@@ -98,6 +122,3 @@ export function useKolContext(): KolContextState {
   }
   return context;
 }
-
-
-

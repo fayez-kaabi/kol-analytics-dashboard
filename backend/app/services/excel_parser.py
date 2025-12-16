@@ -128,10 +128,6 @@ def parse_excel_file(file_path: str) -> list[dict[str, Any]]:
             }
             
             kols.append(kol)
-            
-            # Limit to first 100 for performance (can be removed for full data)
-            if len(kols) >= 100:
-                break
         
         wb.close()
         logger.info(f"Successfully parsed {len(kols)} KOLs from Excel (scanned {row_count} rows)")

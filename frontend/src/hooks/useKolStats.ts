@@ -1,5 +1,6 @@
 /**
  * Custom hook for fetching and managing KOL statistics.
+ * Re-fetches when data source changes.
  */
 
 import { useEffect } from 'react';
@@ -14,14 +15,12 @@ interface UseKolStatsReturn {
 }
 
 export function useKolStats(): UseKolStatsReturn {
-  const { stats, loading, error, fetchStats, refresh } = useKolContext();
+  const { stats, loading, error, fetchStats, refresh, dataSource } = useKolContext();
 
   useEffect(() => {
-    // Fetch stats on mount if not already loaded
-    if (stats === null && !loading && !error) {
-      fetchStats();
-    }
-  }, [stats, loading, error, fetchStats]);
+    // Fetch stats on mount and when data source changes
+    fetchStats();
+  }, [fetchStats, dataSource]);
 
   return {
     stats,
@@ -30,6 +29,3 @@ export function useKolStats(): UseKolStatsReturn {
     refresh,
   };
 }
-
-
-

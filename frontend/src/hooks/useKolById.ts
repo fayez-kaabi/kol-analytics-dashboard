@@ -1,9 +1,11 @@
 /**
  * Custom hook for fetching a single KOL by ID.
+ * Uses the current data source from context.
  */
 
 import { useState, useEffect, useCallback } from 'react';
 import { getKOLById, APIClientError } from '../api/client';
+import { useKolContext } from '../context/KolContext';
 import type { KOL } from '../types/kol';
 
 interface UseKolByIdReturn {
@@ -17,12 +19,13 @@ export function useKolById(id: string | null): UseKolByIdReturn {
   const [kol, setKol] = useState<KOL | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const { dataSource } = useKolContext();
 
   const fetchKol = useCallback(async (kolId: string) => {
     try {
       setLoading(true);
       setError(null);
-      const data = await getKOLById(kolId);
+      const data = await getKOLById(kolId, dataSource);
       setKol(data);
     } catch (err) {
       const errorMessage =
@@ -35,7 +38,7 @@ export function useKolById(id: string | null): UseKolByIdReturn {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [dataSource]);
 
   useEffect(() => {
     if (id) {
@@ -59,6 +62,3 @@ export function useKolById(id: string | null): UseKolByIdReturn {
     refetch,
   };
 }
-
-
-

@@ -1,5 +1,6 @@
 /**
  * Custom hook for fetching and managing KOL list data.
+ * Re-fetches when data source changes.
  */
 
 import { useEffect } from 'react';
@@ -14,14 +15,12 @@ interface UseKolsReturn {
 }
 
 export function useKols(): UseKolsReturn {
-  const { kols, loading, error, fetchKols, refresh } = useKolContext();
+  const { kols, loading, error, fetchKols, refresh, dataSource } = useKolContext();
 
   useEffect(() => {
-    // Fetch KOLs on mount if not already loaded
-    if (kols.length === 0 && !loading && !error) {
-      fetchKols();
-    }
-  }, [kols.length, loading, error, fetchKols]);
+    // Fetch KOLs on mount and when data source changes
+    fetchKols();
+  }, [fetchKols, dataSource]);
 
   return {
     kols,
@@ -30,6 +29,3 @@ export function useKols(): UseKolsReturn {
     refresh,
   };
 }
-
-
-

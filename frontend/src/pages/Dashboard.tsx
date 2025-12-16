@@ -1,8 +1,11 @@
 /**
  * Main dashboard page component.
  * Orchestrates all dashboard elements: stats, charts, and KOL list.
+ * 
+ * BONUS: Toggle between real Excel data (4000+ KOLs) and mock JSON data (50 KOLs).
  */
 
+import { useEffect } from 'react';
 import { useKols } from '../hooks/useKols';
 import { useKolStats } from '../hooks/useKolStats';
 import { useKolContext } from '../context/KolContext';
@@ -16,20 +19,62 @@ import { KolDetails } from '../components/KolDetails';
 export function Dashboard(): JSX.Element {
   const { kols, loading: kolsLoading, error: kolsError } = useKols();
   const { stats, loading: statsLoading, error: statsError } = useKolStats();
-  const { selectedKolId, setSelectedKolId } = useKolContext();
+  const { selectedKolId, setSelectedKolId, dataSource, setDataSource, dataSources, refresh } = useKolContext();
 
   const loading = kolsLoading || statsLoading;
   const error = kolsError || statsError;
+
+  // Refresh data when data source changes
+  useEffect(() => {
+    refresh();
+  }, [dataSource, refresh]);
 
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Header */}
       <header className="bg-gradient-to-r from-blue-600 to-blue-800 text-white shadow-lg">
         <div className="container mx-auto px-4 py-6">
-          <h1 className="text-3xl font-bold">KOL Analytics Dashboard</h1>
-          <p className="text-blue-100 mt-2">
-            Key Opinion Leaders in Medical Research
-          </p>
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div>
+              <h1 className="text-3xl font-bold">KOL Analytics Dashboard</h1>
+              <p className="text-blue-100 mt-2">
+                Key Opinion Leaders in Medical Research
+              </p>
+            </div>
+            
+            {/* Data Source Toggle */}
+            <div className="bg-white/10 backdrop-blur rounded-lg p-3">
+              <p className="text-xs text-blue-200 mb-2 font-medium">Data Source:</p>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setDataSource('excel')}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                    dataSource === 'excel'
+                      ? 'bg-white text-blue-700 shadow-md'
+                      : 'bg-white/20 text-white hover:bg-white/30'
+                  }`}
+                >
+                  📊 Real Data
+                  <span className="ml-1 text-xs opacity-75">
+                    ({dataSources.find(s => s.id === 'excel')?.count ?? '4000+'}+)
+                  </span>
+                </button>
+                <button
+                  onClick={() => setDataSource('mock')}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                    dataSource === 'mock'
+                      ? 'bg-white text-blue-700 shadow-md'
+                      : 'bg-white/20 text-white hover:bg-white/30'
+                  }`}
+                >
+                  🧪 Mock Data
+                  <span className="ml-1 text-xs opacity-75">
+                    ({dataSources.find(s => s.id === 'mock')?.count ?? 50})
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </header>
 
@@ -40,7 +85,7 @@ export function Dashboard(): JSX.Element {
           <div className="flex items-center justify-center py-20">
             <div className="text-center">
               <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto"></div>
-              <p className="text-gray-600 mt-4 text-lg">Loading data...</p>
+              <p className="text-gray-600 mt-4 text-lg">Loading {dataSource === 'excel' ? 'real' : 'mock'} data...</p>
             </div>
           </div>
         )}
@@ -163,9 +208,11 @@ export function Dashboard(): JSX.Element {
       <footer className="bg-white border-t border-gray-200 mt-12">
         <div className="container mx-auto px-4 py-6 text-center text-gray-600 text-sm">
           <p>KOL Analytics Dashboard • Built with React, TypeScript, and FastAPI</p>
+          <p className="text-xs mt-1 text-gray-400">
+            Currently showing: {dataSource === 'excel' ? 'Real Excel data (Vitiligo researchers)' : 'Mock JSON data (sample)'}
+          </p>
         </div>
       </footer>
     </div>
   );
 }
-

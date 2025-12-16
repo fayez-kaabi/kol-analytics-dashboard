@@ -7,6 +7,22 @@ import type { KOL, KOLStats, APIError } from '../types/kol';
 
 const API_BASE_URL = 'http://localhost:8000';
 
+// Data source type - excel (real) or mock (sample)
+export type DataSource = 'excel' | 'mock';
+
+// Data source info from backend
+export interface DataSourceInfo {
+  id: DataSource;
+  name: string;
+  description: string;
+  count: number;
+}
+
+export interface DataSourcesResponse {
+  sources: DataSourceInfo[];
+  default: DataSource;
+}
+
 /**
  * Custom error class for API errors
  */
@@ -29,7 +45,6 @@ async function fetchJSON<T>(endpoint: string): Promise<T> {
     const response = await fetch(`${API_BASE_URL}${endpoint}`);
 
     if (!response.ok) {
-      // Try to parse error detail from response
       let errorDetail = `HTTP ${response.status}: ${response.statusText}`;
       try {
         const errorData: APIError = await response.json();
@@ -51,7 +66,6 @@ async function fetchJSON<T>(endpoint: string): Promise<T> {
       throw error;
     }
 
-    // Network or other errors
     throw new APIClientError(
       `Network error while fetching ${endpoint}: ${
         error instanceof Error ? error.message : 'Unknown error'
@@ -61,24 +75,31 @@ async function fetchJSON<T>(endpoint: string): Promise<T> {
 }
 
 /**
- * Fetch all KOLs
+ * Fetch available data sources
  */
-export async function getAllKOLs(): Promise<KOL[]> {
-  return fetchJSON<KOL[]>('/api/kols');
+export async function getDataSources(): Promise<DataSourcesResponse> {
+  return fetchJSON<DataSourcesResponse>('/api/kols/sources');
 }
 
 /**
- * Fetch a single KOL by ID
+ * Fetch all KOLs from specified data source
  */
-export async function getKOLById(id: string): Promise<KOL> {
-  return fetchJSON<KOL>(`/api/kols/${id}`);
+export async function getAllKOLs(source: DataSource = 'excel'): Promise<KOL[]> {
+  return fetchJSON<KOL[]>(`/api/kols?source=${source}`);
 }
 
 /**
- * Fetch comprehensive KOL statistics
+ * Fetch a single KOL by ID from specified data source
  */
-export async function getKOLStats(): Promise<KOLStats> {
-  return fetchJSON<KOLStats>('/api/kols/stats');
+export async function getKOLById(id: string, source: DataSource = 'excel'): Promise<KOL> {
+  return fetchJSON<KOL>(`/api/kols/${id}?source=${source}`);
+}
+
+/**
+ * Fetch comprehensive KOL statistics from specified data source
+ */
+export async function getKOLStats(source: DataSource = 'excel'): Promise<KOLStats> {
+  return fetchJSON<KOLStats>(`/api/kols/stats?source=${source}`);
 }
 
 /**
@@ -87,6 +108,3 @@ export async function getKOLStats(): Promise<KOLStats> {
 export async function checkHealth(): Promise<{ status: string }> {
   return fetchJSON<{ status: string }>('/health');
 }
-
-
-
