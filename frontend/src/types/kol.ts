@@ -1,6 +1,6 @@
 /**
  * Type definitions for KOL (Key Opinion Leader) data.
- * Mirrors backend Pydantic models with strict TypeScript typing.
+ * Mirrors backend Pydantic models - using camelCase to match API response.
  */
 
 export interface KOL {
@@ -9,9 +9,9 @@ export interface KOL {
   affiliation: string;
   country: string;
   city: string;
-  expertise_area: string;
-  publications_count: number | null;
-  h_index: number | null;
+  expertiseArea: string;
+  publicationsCount: number | null;
+  hIndex: number | null;
   citations: number | null;
 }
 
@@ -44,4 +44,3 @@ export interface KOLStats {
 export interface APIError {
   detail: string;
 }
-

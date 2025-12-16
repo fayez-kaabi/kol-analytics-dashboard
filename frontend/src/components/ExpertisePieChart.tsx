@@ -69,8 +69,8 @@ export function ExpertisePieChart({ kols }: ExpertisePieChartProps): JSX.Element
     const countByExpertise = new Map<string, number>();
     
     kols.forEach(kol => {
-      const current = countByExpertise.get(kol.expertise_area) || 0;
-      countByExpertise.set(kol.expertise_area, current + 1);
+      const current = countByExpertise.get(kol.expertiseArea) || 0;
+      countByExpertise.set(kol.expertiseArea, current + 1);
     });
 
     const total = kols.length;
@@ -140,4 +140,6 @@ export function ExpertisePieChart({ kols }: ExpertisePieChartProps): JSX.Element
     </div>
   );
 }
+
+
 

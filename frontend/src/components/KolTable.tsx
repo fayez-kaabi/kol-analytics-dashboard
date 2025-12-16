@@ -67,16 +67,16 @@ export function KolTable({ kols, onSelectKol, selectedKolId }: KolTableProps): J
                   {kol.country}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {kol.expertise_area}
+                  {kol.expertiseArea}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
-                  {kol.publications_count ?? 'N/A'}
+                  {kol.publicationsCount ?? 'N/A'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
                   {kol.citations?.toLocaleString() ?? 'N/A'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
-                  {kol.h_index ?? 'N/A'}
+                  {kol.hIndex ?? 'N/A'}
                 </td>
               </tr>
             ))}
@@ -92,4 +92,6 @@ export function KolTable({ kols, onSelectKol, selectedKolId }: KolTableProps): J
     </div>
   );
 }
+
+
 

@@ -88,3 +88,5 @@ export async function checkHealth(): Promise<{ status: string }> {
   return fetchJSON<{ status: string }>('/health');
 }
 
+
+

@@ -219,3 +219,5 @@ export function CountriesBarChartD3({ data }: CountriesBarChartD3Props): JSX.Ele
   );
 }
 
+
+

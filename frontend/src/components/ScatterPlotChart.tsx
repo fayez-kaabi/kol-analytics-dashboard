@@ -72,15 +72,15 @@ export function ScatterPlotChart({ kols }: ScatterPlotChartProps): JSX.Element {
   const scatterData: ScatterDataPoint[] = React.useMemo(() => {
     return kols
       .filter(kol => 
-        kol.publications_count !== null && 
+        kol.publicationsCount !== null && 
         kol.citations !== null && 
-        kol.h_index !== null
+        kol.hIndex !== null
       )
       .map(kol => ({
         name: kol.name,
-        publications: kol.publications_count!,
+        publications: kol.publicationsCount!,
         citations: kol.citations!,
-        hIndex: kol.h_index!,
+        hIndex: kol.hIndex!,
         country: kol.country,
       }));
   }, [kols]);
@@ -185,4 +185,6 @@ export function ScatterPlotChart({ kols }: ScatterPlotChartProps): JSX.Element {
     </div>
   );
 }
+
+
 

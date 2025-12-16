@@ -28,7 +28,7 @@ export function KolTableWithSearch({
   }, [kols]);
 
   const uniqueExpertiseAreas = useMemo(() => {
-    const areas = new Set(kols.map(kol => kol.expertise_area));
+    const areas = new Set(kols.map(kol => kol.expertiseArea));
     return Array.from(areas).sort();
   }, [kols]);
 
@@ -40,13 +40,13 @@ export function KolTableWithSearch({
         kol.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         kol.affiliation.toLowerCase().includes(searchTerm.toLowerCase()) ||
         kol.country.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        kol.expertise_area.toLowerCase().includes(searchTerm.toLowerCase());
+        kol.expertiseArea.toLowerCase().includes(searchTerm.toLowerCase());
 
       // Country filter
       const matchesCountry = countryFilter === '' || kol.country === countryFilter;
 
       // Expertise filter
-      const matchesExpertise = expertiseFilter === '' || kol.expertise_area === expertiseFilter;
+      const matchesExpertise = expertiseFilter === '' || kol.expertiseArea === expertiseFilter;
 
       return matchesSearch && matchesCountry && matchesExpertise;
     });
@@ -180,16 +180,16 @@ export function KolTableWithSearch({
                   {kol.country}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {kol.expertise_area}
+                  {kol.expertiseArea}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
-                  {kol.publications_count ?? 'N/A'}
+                  {kol.publicationsCount ?? 'N/A'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
                   {kol.citations?.toLocaleString() ?? 'N/A'}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
-                  {kol.h_index ?? 'N/A'}
+                  {kol.hIndex ?? 'N/A'}
                 </td>
               </tr>
             ))}
@@ -214,4 +214,6 @@ export function KolTableWithSearch({
     </div>
   );
 }
+
+
 

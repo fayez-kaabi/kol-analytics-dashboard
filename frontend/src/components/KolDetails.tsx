@@ -57,7 +57,7 @@ export function KolDetails({ kolId, onClose }: KolDetailsProps): JSX.Element | n
                   <InfoItem label="Affiliation" value={kol.affiliation} />
                   <InfoItem label="Country" value={kol.country} />
                   <InfoItem label="City" value={kol.city} />
-                  <InfoItem label="Expertise Area" value={kol.expertise_area} />
+                  <InfoItem label="Expertise Area" value={kol.expertiseArea} />
                 </div>
               </div>
 
@@ -69,7 +69,7 @@ export function KolDetails({ kolId, onClose }: KolDetailsProps): JSX.Element | n
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <MetricCard
                     label="Publications"
-                    value={kol.publications_count ?? 'N/A'}
+                    value={kol.publicationsCount ?? 'N/A'}
                     icon="📚"
                     color="bg-blue-500"
                   />
@@ -81,7 +81,7 @@ export function KolDetails({ kolId, onClose }: KolDetailsProps): JSX.Element | n
                   />
                   <MetricCard
                     label="H-Index"
-                    value={kol.h_index ?? 'N/A'}
+                    value={kol.hIndex ?? 'N/A'}
                     icon="📊"
                     color="bg-purple-500"
                   />
@@ -89,7 +89,7 @@ export function KolDetails({ kolId, onClose }: KolDetailsProps): JSX.Element | n
               </div>
 
               {/* Calculated Impact */}
-              {kol.publications_count && kol.publications_count > 0 && kol.citations && (
+              {kol.publicationsCount && kol.publicationsCount > 0 && kol.citations && (
                 <div className="bg-gray-50 rounded-lg p-4">
                   <h4 className="text-lg font-semibold text-gray-800 mb-2">
                     Impact Analysis
@@ -97,7 +97,7 @@ export function KolDetails({ kolId, onClose }: KolDetailsProps): JSX.Element | n
                   <p className="text-sm text-gray-600">
                     Citations per publication:{' '}
                     <span className="font-bold text-blue-600">
-                      {(kol.citations / kol.publications_count).toFixed(2)}
+                      {(kol.citations / kol.publicationsCount).toFixed(2)}
                     </span>
                   </p>
                   <p className="text-xs text-gray-500 mt-2">
@@ -154,4 +154,6 @@ function MetricCard({ label, value, icon, color }: MetricCardProps): JSX.Element
     </div>
   );
 }
+
+
 
