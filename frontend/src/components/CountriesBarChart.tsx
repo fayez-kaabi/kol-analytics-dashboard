@@ -59,7 +59,7 @@ function CustomTooltip({ active, payload }: CustomTooltipProps): JSX.Element | n
 
 export function CountriesBarChart({ data }: CountriesBarChartProps): JSX.Element {
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+    <div className="bg-white rounded-lg shadow-md p-6">
       <h2 className="text-2xl font-bold text-gray-800 mb-6">
         Top 10 Countries by KOL Count
       </h2>
