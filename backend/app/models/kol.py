@@ -1,6 +1,6 @@
 """KOL (Key Opinion Leader) data models."""
 from typing import Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class KOL(BaseModel):
@@ -20,7 +20,11 @@ class KOL(BaseModel):
     h_index: Optional[int] = Field(alias="hIndex", default=None)
     citations: Optional[int] = Field(default=None)
     
-    class Config:
-        populate_by_name = True
-        # Allow both camelCase (from JSON) and snake_case (Python convention)
+    model_config = ConfigDict(
+        populate_by_name=True,
+        # Serialize using field names (snake_case) not aliases
+        by_alias=False
+    )
+
+
 
