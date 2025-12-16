@@ -141,27 +141,37 @@ export function Dashboard(): JSX.Element {
                 <h3 className="text-xl font-bold text-gray-800 mb-4">
                   🏆 Highest Research Impact
                 </h3>
-                <div className="bg-gradient-to-r from-amber-50 to-amber-100 rounded-lg p-4">
-                  <p className="font-semibold text-gray-800 text-lg">
-                    {stats.highest_citations_per_publication_kol.name}
-                  </p>
-                  <p className="text-sm text-gray-600 mt-2">
-                    Citations per publication:{' '}
-                    <span className="font-bold text-amber-700">
-                      {stats.highest_citations_per_publication_kol.ratio.toFixed(2)}
-                    </span>
-                  </p>
-                  <p className="text-xs text-gray-500 mt-2">
-                    {stats.highest_citations_per_publication_kol.citations.toLocaleString()}{' '}
-                    citations /{' '}
-                    {stats.highest_citations_per_publication_kol.publications_count}{' '}
-                    publications
-                  </p>
-                  <p className="text-xs text-gray-600 mt-3 italic">
-                    This KOL's work receives exceptional attention, indicating
-                    highly influential research in their field.
-                  </p>
-                </div>
+                {stats.highest_citations_per_publication_kol.ratio > 0 ? (
+                  <div className="bg-gradient-to-r from-amber-50 to-amber-100 rounded-lg p-4">
+                    <p className="font-semibold text-gray-800 text-lg">
+                      {stats.highest_citations_per_publication_kol.name}
+                    </p>
+                    <p className="text-sm text-gray-600 mt-2">
+                      Citations per publication:{' '}
+                      <span className="font-bold text-amber-700">
+                        {stats.highest_citations_per_publication_kol.ratio.toFixed(2)}
+                      </span>
+                    </p>
+                    <p className="text-xs text-gray-500 mt-2">
+                      {stats.highest_citations_per_publication_kol.citations.toLocaleString()}{' '}
+                      citations /{' '}
+                      {stats.highest_citations_per_publication_kol.publications_count}{' '}
+                      publications
+                    </p>
+                    <p className="text-xs text-gray-600 mt-3 italic">
+                      This KOL's work receives exceptional attention, indicating
+                      highly influential research in their field.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="bg-gray-50 rounded-lg p-4 text-center">
+                    <p className="text-4xl mb-2">📊</p>
+                    <p className="text-gray-600 font-medium">Citation Data Not Available</p>
+                    <p className="text-sm text-gray-500 mt-1">
+                      Switch to Mock Data to see impact analysis
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* Data Quality */}

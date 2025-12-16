@@ -1,9 +1,11 @@
 /**
  * Scatter plot showing relationship between publications and citations.
  * BONUS FEATURE: Second visualization (scatter plot)
+ * 
+ * Shows empty state message when citation data is not available.
  */
 
-import React from 'react';
+import { useMemo } from 'react';
 import {
   ScatterChart,
   Scatter,
@@ -69,7 +71,7 @@ function CustomTooltip({ active, payload }: CustomTooltipProps): JSX.Element | n
 
 export function ScatterPlotChart({ kols }: ScatterPlotChartProps): JSX.Element {
   // Prepare data for scatter plot (filter out KOLs with missing data)
-  const scatterData: ScatterDataPoint[] = React.useMemo(() => {
+  const scatterData: ScatterDataPoint[] = useMemo(() => {
     return kols
       .filter(kol => 
         kol.publicationsCount !== null && 
@@ -85,8 +87,11 @@ export function ScatterPlotChart({ kols }: ScatterPlotChartProps): JSX.Element {
       }));
   }, [kols]);
 
+  // Check if we have citation data
+  const hasCitationData = scatterData.length > 0;
+
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
+    <div className="bg-white rounded-lg shadow-md p-6 mb-8">
       <h2 className="text-2xl font-bold text-gray-800 mb-2">
         Publications vs Citations Analysis
       </h2>
@@ -94,97 +99,114 @@ export function ScatterPlotChart({ kols }: ScatterPlotChartProps): JSX.Element {
         Each dot represents a KOL. Hover to see details. Size indicates H-Index.
       </p>
       
-      <ResponsiveContainer width="100%" height={400}>
-        <ScatterChart
-          margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-          <XAxis
-            type="number"
-            dataKey="publications"
-            name="Publications"
-            label={{
-              value: 'Number of Publications',
-              position: 'bottom',
-              offset: 10,
-              style: { fontSize: 14, fill: '#4b5563' },
-            }}
-            tick={{ fontSize: 12, fill: '#4b5563' }}
-          />
-          <YAxis
-            type="number"
-            dataKey="citations"
-            name="Citations"
-            label={{
-              value: 'Total Citations',
-              angle: -90,
-              position: 'insideLeft',
-              style: { fontSize: 14, fill: '#4b5563' },
-            }}
-            tick={{ fontSize: 12, fill: '#4b5563' }}
-          />
-          <ZAxis 
-            type="number" 
-            dataKey="hIndex" 
-            range={[50, 400]} 
-            name="H-Index"
-          />
-          <Tooltip 
-            content={<CustomTooltip />} 
-            cursor={{ strokeDasharray: '3 3' }}
-          />
-          <Legend 
-            wrapperStyle={{ paddingTop: '20px' }}
-            payload={[
-              { 
-                value: 'KOLs (size = H-Index)', 
-                type: 'circle', 
-                color: '#3b82f6' 
-              }
-            ]}
-          />
-          <Scatter 
-            name="KOLs" 
-            data={scatterData} 
-            fill="#3b82f6"
-            fillOpacity={0.6}
-          />
-        </ScatterChart>
-      </ResponsiveContainer>
+      {hasCitationData ? (
+        <>
+          <ResponsiveContainer width="100%" height={400}>
+            <ScatterChart
+              margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+              <XAxis
+                type="number"
+                dataKey="publications"
+                name="Publications"
+                label={{
+                  value: 'Number of Publications',
+                  position: 'bottom',
+                  offset: 10,
+                  style: { fontSize: 14, fill: '#4b5563' },
+                }}
+                tick={{ fontSize: 12, fill: '#4b5563' }}
+              />
+              <YAxis
+                type="number"
+                dataKey="citations"
+                name="Citations"
+                label={{
+                  value: 'Total Citations',
+                  angle: -90,
+                  position: 'insideLeft',
+                  style: { fontSize: 14, fill: '#4b5563' },
+                }}
+                tick={{ fontSize: 12, fill: '#4b5563' }}
+              />
+              <ZAxis 
+                type="number" 
+                dataKey="hIndex" 
+                range={[50, 400]} 
+                name="H-Index"
+              />
+              <Tooltip 
+                content={<CustomTooltip />} 
+                cursor={{ strokeDasharray: '3 3' }}
+              />
+              <Legend 
+                wrapperStyle={{ paddingTop: '20px' }}
+                payload={[
+                  { 
+                    value: 'KOLs (size = H-Index)', 
+                    type: 'circle', 
+                    color: '#3b82f6' 
+                  }
+                ]}
+              />
+              <Scatter 
+                name="KOLs" 
+                data={scatterData} 
+                fill="#3b82f6"
+                fillOpacity={0.6}
+              />
+            </ScatterChart>
+          </ResponsiveContainer>
 
-      {/* Key Insights */}
-      <div className="mt-6 pt-6 border-t border-gray-200">
-        <h3 className="font-semibold text-gray-800 mb-3">Key Insights</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
-          <div className="flex items-start">
-            <span className="text-blue-600 mr-2">📈</span>
-            <p>
-              <strong>Positive correlation:</strong> More publications generally lead to more citations
-            </p>
+          {/* Key Insights */}
+          <div className="mt-6 pt-6 border-t border-gray-200">
+            <h3 className="font-semibold text-gray-800 mb-3">Key Insights</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
+              <div className="flex items-start">
+                <span className="text-blue-600 mr-2">📈</span>
+                <p>
+                  <strong>Positive correlation:</strong> More publications generally lead to more citations
+                </p>
+              </div>
+              <div className="flex items-start">
+                <span className="text-green-600 mr-2">💡</span>
+                <p>
+                  <strong>Outliers above trend:</strong> High impact researchers with exceptional citation ratios
+                </p>
+              </div>
+              <div className="flex items-start">
+                <span className="text-purple-600 mr-2">🎯</span>
+                <p>
+                  <strong>Bubble size:</strong> Larger bubbles indicate higher H-Index (research impact)
+                </p>
+              </div>
+              <div className="flex items-start">
+                <span className="text-orange-600 mr-2">⭐</span>
+                <p>
+                  <strong>Top right quadrant:</strong> Most prolific and cited researchers
+                </p>
+              </div>
+            </div>
           </div>
-          <div className="flex items-start">
-            <span className="text-green-600 mr-2">💡</span>
-            <p>
-              <strong>Outliers above trend:</strong> High impact researchers with exceptional citation ratios
-            </p>
-          </div>
-          <div className="flex items-start">
-            <span className="text-purple-600 mr-2">🎯</span>
-            <p>
-              <strong>Bubble size:</strong> Larger bubbles indicate higher H-Index (research impact)
-            </p>
-          </div>
-          <div className="flex items-start">
-            <span className="text-orange-600 mr-2">⭐</span>
-            <p>
-              <strong>Top right quadrant:</strong> Most prolific and cited researchers
-            </p>
+        </>
+      ) : (
+        /* Empty State - No citation data available */
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <div className="text-6xl mb-4">📊</div>
+          <h3 className="text-xl font-semibold text-gray-700 mb-2">
+            Citation Data Not Available
+          </h3>
+          <p className="text-gray-500 max-w-md mb-4">
+            The current data source (Excel) does not include citation counts. 
+            Switch to <strong>Mock Data</strong> to see this visualization with sample citation data.
+          </p>
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-700">
+            <p className="font-medium">💡 Tip:</p>
+            <p>Use the toggle in the header to switch between data sources.</p>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
-
-
-
