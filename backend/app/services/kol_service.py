@@ -36,6 +36,90 @@ class KOLService:
         """Return all KOLs."""
         return self._kols
     
+    def get_kols_filtered(
+        self,
+        country: Optional[str] = None,
+        expertise_area: Optional[str] = None,
+        search: Optional[str] = None,
+        sort_by: Optional[str] = None,
+        order: str = "asc",
+        limit: Optional[int] = None,
+        offset: int = 0
+    ) -> List[KOL]:
+        """
+        Get KOLs with filtering, sorting, and pagination.
+        
+        BONUS FEATURE: Backend pagination/filtering/sorting with query parameters
+        
+        Args:
+            country: Filter by exact country match
+            expertise_area: Filter by exact expertise area  
+            search: Search in name and affiliation (case-insensitive)
+            sort_by: Field to sort by (publications_count, citations, h_index, name)
+            order: Sort order (asc or desc)
+            limit: Maximum number of results
+            offset: Number of results to skip
+            
+        Returns:
+            Filtered and sorted list of KOLs
+            
+        Raises:
+            ValueError: If sort_by field is invalid or order is not asc/desc
+        """
+        # Start with all KOLs
+        result = self._kols.copy()
+        
+        # Apply filters
+        if country:
+            result = [kol for kol in result if kol.country == country]
+        
+        if expertise_area:
+            result = [kol for kol in result if kol.expertise_area == expertise_area]
+        
+        if search:
+            search_lower = search.lower()
+            result = [
+                kol for kol in result 
+                if search_lower in kol.name.lower() or 
+                   search_lower in kol.affiliation.lower()
+            ]
+        
+        # Apply sorting
+        if sort_by:
+            valid_sort_fields = ['publications_count', 'citations', 'h_index', 'name']
+            if sort_by not in valid_sort_fields:
+                raise ValueError(
+                    f"Invalid sort_by field: {sort_by}. "
+                    f"Must be one of: {', '.join(valid_sort_fields)}"
+                )
+            
+            if order not in ['asc', 'desc']:
+                raise ValueError(f"Invalid order: {order}. Must be 'asc' or 'desc'")
+            
+            reverse = (order == 'desc')
+            
+            # Sort with None values handled (put them at the end)
+            if sort_by == 'name':
+                result.sort(key=lambda x: x.name, reverse=reverse)
+            else:
+                # For numeric fields, treat None as -infinity for ascending, infinity for descending
+                result.sort(
+                    key=lambda x: (
+                        getattr(x, sort_by) is None,  # None values go to end
+                        getattr(x, sort_by) or (float('-inf') if not reverse else float('inf'))
+                    ),
+                    reverse=reverse
+                )
+        
+        # Apply pagination
+        if offset > 0:
+            result = result[offset:]
+        
+        if limit is not None:
+            result = result[:limit]
+        
+        return result
+    
     def get_kol_by_id(self, kol_id: str) -> Optional[KOL]:
         """
         Get a single KOL by ID.
