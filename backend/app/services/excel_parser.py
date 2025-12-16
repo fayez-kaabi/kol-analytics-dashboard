@@ -215,3 +215,5 @@ class ExcelParser:
         # String fields
         return str(value).strip() if value else None
 
+
+

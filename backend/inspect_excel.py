@@ -18,3 +18,5 @@ if excel_file.exists():
     for i, row in enumerate(sheet.iter_rows(max_row=10, values_only=True), 1):
         print(f"{i}: {row[:10]}")  # Show first 10 columns
 
+
+

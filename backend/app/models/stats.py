@@ -32,3 +32,5 @@ class KOLStats(BaseModel):
     highest_citations_per_publication_kol: HighestCitationsPerPublicationKOL
     data_quality_issues: List[str]
 
+
+

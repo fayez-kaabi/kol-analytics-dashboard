@@ -1,282 +1,164 @@
-# KOL Analytics Dashboard - Full Stack Application
+# KOL Analytics Dashboard
 
-A comprehensive analytics dashboard for Key Opinion Leaders (KOLs) in the medical/pharmaceutical space. Built with FastAPI (Python) backend and React (TypeScript) frontend.
-
-## 🏗 Architecture
-
-```
-/
-├── backend/           # FastAPI REST API
-│   ├── app/
-│   │   ├── api/      # Route handlers
-│   │   ├── core/     # Configuration
-│   │   ├── models/   # Pydantic data models
-│   │   ├── services/ # Business logic
-│   │   └── data/     # Mock data (JSON)
-│   └── requirements.txt
-│
-├── frontend/          # React + TypeScript + Vite
-│   ├── src/
-│   │   ├── api/      # API client
-│   │   ├── types/    # TypeScript interfaces
-│   │   ├── context/  # React Context
-│   │   ├── hooks/    # Custom hooks
-│   │   ├── components/ # React components
-│   │   └── pages/    # Page components
-│   └── package.json
-│
-└── README.md         # This file
-```
+A full-stack analytics dashboard for Key Opinion Leaders (KOLs) in the medical/pharmaceutical space.
 
 ## 🚀 Quick Start
 
 ### Prerequisites
+- **Python 3.9+** 
+- **Node.js 18+**
 
-- **Python 3.9+** (with pip)
-- **Node.js 18+** (with npm)
-
-### Backend Setup
-
+### Backend
 ```bash
 cd backend
+python -m venv venv
+.\venv\Scripts\Activate.ps1  # Windows
 pip install -r requirements.txt
 uvicorn app.main:app --reload --port 8000
 ```
 
-Backend will be available at: **http://localhost:8000**
-
-API Documentation (Swagger): **http://localhost:8000/docs**
-
-### Frontend Setup
-
-In a new terminal:
-
+### Frontend
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-Frontend will be available at: **http://localhost:5173**
+**Open:** http://localhost:5173
+
+## 🏗 Architecture
+
+```
+/
+├── backend/              # FastAPI REST API
+│   ├── app/
+│   │   ├── api/         # Route handlers
+│   │   ├── core/        # Configuration
+│   │   ├── models/      # Pydantic data models
+│   │   ├── services/    # Business logic
+│   │   └── data/        # Mock data (JSON)
+│   └── requirements.txt
+│
+├── frontend/             # React + TypeScript + Vite
+│   ├── src/
+│   │   ├── api/         # API client
+│   │   ├── types/       # TypeScript interfaces
+│   │   ├── context/     # React Context
+│   │   ├── hooks/       # Custom hooks
+│   │   ├── components/  # UI components
+│   │   └── pages/       # Dashboard page
+│   └── package.json
+│
+└── MY_README.md          # This file
+```
 
 ## 📊 Features
 
-### Backend (FastAPI)
+### Core Features
+- ✅ **REST API** with FastAPI + Pydantic validation
+- ✅ **Dashboard** with summary statistics cards
+- ✅ **Interactive bar chart** (D3.js) with tooltips
+- ✅ **KOL table** with click-to-view details
+- ✅ **Loading/error states** throughout
+- ✅ **TypeScript strict mode** (no `any`)
+- ✅ **Responsive design** with Tailwind CSS
 
-- **RESTful API** with automatic OpenAPI documentation
-- **Pydantic models** for data validation and serialization
-- **CORS enabled** for frontend development
-- **In-memory data caching** for fast responses
-
-#### API Endpoints
-
+### API Endpoints
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/api/kols` | List all KOLs |
-| GET | `/api/kols/{id}` | Get single KOL by ID (404 if not found) |
-| GET | `/api/kols/stats` | Comprehensive statistics |
+| GET | `/api/kols` | List all KOLs (with filtering, sorting, pagination) |
+| GET | `/api/kols/{id}` | Single KOL by ID |
+| GET | `/api/kols/stats` | Aggregate statistics |
 | GET | `/health` | Health check |
-| GET | `/` | API information |
 
-#### Statistics Computed
+## 🎁 BONUS Features (ALL Implemented!)
 
-- **Total KOLs** and **unique countries**
-- **Total publications** and **average H-index**
-- **Top 10 countries** by KOL count
-- **Highest citations-per-publication KOL** (with ratio calculation)
-- **Data quality issues** (missing values, suspicious data, duplicates)
+### 1. ✅ Advanced Filtering
+- Search by name, affiliation, country, expertise
+- Dropdown filters for country and expertise area
+- Clear filters button
+- Result counter (X of Y KOLs)
 
-### Frontend (React + TypeScript)
+### 2. ✅ Additional Visualizations
+- **Pie chart** - KOL distribution by expertise
+- **Scatter plot** - Publications vs Citations (bubble size = H-Index)
 
-- **Strict TypeScript** (no `any` types)
-- **Context API + Custom Hooks** for state management
-- **Responsive design** with Tailwind CSS
-- **Interactive visualizations** with Recharts
-- **Loading and error states** throughout
+### 3. ✅ Backend Query Parameters
+```
+GET /api/kols?country=Japan&sort_by=citations&order=desc&limit=10
+```
+- `country`, `expertise_area` - Filtering
+- `search` - Text search
+- `sort_by`, `order` - Sorting
+- `limit`, `offset` - Pagination
 
-#### Dashboard Components
+### 4. ✅ Excel Parsing
+- Enable with `USE_EXCEL=true` environment variable
+- Smart column mapping (handles various Excel formats)
+- Automatic fallback to JSON if Excel fails
 
-1. **Statistics Cards** - Key metrics at a glance
-2. **Bar Chart** - Top 10 countries with interactive tooltips
-3. **KOL Table** - Sortable list with click-to-view details
-4. **KOL Details Modal** - Comprehensive individual profiles
-5. **Insights Section** - Highest impact KOL and data quality report
+### 5. ✅ Raw D3.js Implementation
+- Manual SVG creation (no wrapper library)
+- D3 scales, axes, transitions
+- Custom interactive tooltips
+- Responsive sizing
 
-## 🔍 Data Analysis Notes
+## 🔍 Data Analysis
 
 ### Highest Citations-Per-Publication KOL
+The system identifies the KOL with the highest ratio (citations / publications). A high ratio indicates impactful research where each publication receives substantial attention.
 
-The system identifies the KOL with the highest ratio of citations to publications. This metric is significant because:
-
-- **High ratio** indicates impactful research where each publication receives substantial attention
-- Suggests the KOL is producing influential, frequently-referenced work
-- More meaningful than raw citation counts for comparing researchers with different publication volumes
-
-### Data Quality Observations
-
-The dashboard analyzes and reports:
-
-- **Missing numeric values** (null publications, citations, h-index)
-- **Suspicious zeros** (KOLs with 0 publications but positive h-index)
-- **Empty string fields** (missing names, countries)
-- **Duplicate IDs** in the dataset
-- **Inconsistencies** that may require data cleaning
-
-These insights help identify areas where data collection or validation could be improved.
+### Data Quality Issues Detected
+- Missing numeric values
+- Suspicious zeros (0 publications but positive h-index)
+- Empty string fields
+- Duplicate IDs
 
 ## 🛠 Technology Stack
 
-### Backend
-- **FastAPI** 0.104.1 - Modern, fast web framework
-- **Pydantic** 2.5.0 - Data validation using Python type hints
-- **Uvicorn** 0.24.0 - ASGI server
+**Backend:** FastAPI, Pydantic, Uvicorn, openpyxl  
+**Frontend:** React 18, TypeScript 5 (strict), Vite 5, Tailwind CSS, Recharts, D3.js
 
-### Frontend
-- **React** 18.2 - UI library
-- **TypeScript** 5.2 - Strict type safety
-- **Vite** 5.0 - Fast build tool
-- **Tailwind CSS** 3.3 - Utility-first styling
-- **Recharts** 2.10 - Charting library
+## 📝 Design Decisions
 
-## 🎯 Design Decisions
-
-### Backend Architecture
-
-1. **Service Layer Pattern** - Business logic separated from routes for testability
-2. **In-memory caching** - Data loaded once at startup for fast access
-3. **Optional numeric fields** - Handles missing/invalid data gracefully with `Optional[int]`
-4. **Comprehensive error handling** - 404s, 500s with detailed error messages
-5. **Field aliasing** - Supports both camelCase (JSON) and snake_case (Python)
-
-### Frontend Architecture
-
-1. **Context + Hooks** - Centralized state management without external libraries
-2. **Custom hooks** - Encapsulates data fetching logic for reusability
-3. **Strict typing** - All API responses and component props fully typed
-4. **Responsive grid layouts** - Mobile-first design with Tailwind
-5. **Error boundaries** - Graceful degradation when API is unavailable
-
-## 🎁 BONUS Features Implemented
-
-### ✅ Advanced Filtering
-- **Search functionality** - Filter KOLs by name, affiliation, country, expertise
-- **Multi-select dropdowns** - Filter by country and expertise area
-- **Clear filters** button with visual feedback
-- **Result counter** showing filtered vs total KOLs
-
-### ✅ Additional Visualizations
-- **Pie chart** - KOL distribution by expertise area with percentages
-- **Scatter plot** - Publications vs Citations analysis with H-Index as bubble size
-- **Interactive tooltips** on all charts with detailed information
-- **Key insights** sections explaining what the visualizations show
-
-### ✅ Backend Pagination/Filtering/Sorting
-- **Query parameters** for `/api/kols` endpoint:
-  - `country` - Filter by country
-  - `expertise_area` - Filter by expertise
-  - `search` - Search in name/affiliation
-  - `sort_by` - Sort by publications_count, citations, h_index, or name
-  - `order` - asc or desc
-  - `limit` & `offset` - Pagination support
-- **Full validation** and error handling for query parameters
-
-### ✅ Excel Parsing
-- **Smart column mapping** - Automatically maps various Excel column names to JSON fields
-- **Data type conversion** - Numeric fields converted correctly
-- **Flexible sheet selection** - Finds data in common sheet names
-- **Automatic fallback** - Falls back to JSON if Excel parsing fails
-- **Environment control** - Enable via `USE_EXCEL=true`
-
-### ✅ Raw D3.js Implementation  
-- **Manual SVG creation** - No wrapper library, pure D3
-- **D3 scales and axes** - Proper scale construction and axis rendering
-- **Smooth transitions** - Animated bar entrance with easing
-- **Custom tooltips** - HTML tooltips with hover effects
-- **Responsive sizing** - Adapts to container width
-- **Professional styling** - Grid lines, rotated labels, hover effects
-
-### 📝 All BONUS Features Implemented! 🎉
-
-### Additional Improvements (Given More Time)
-
-- [ ] **Unit tests** - Backend (pytest) and frontend (Vitest/Jest)
-- [ ] **E2E tests** - Playwright or Cypress
-- [ ] **Caching strategy** - Redis for larger datasets
-- [ ] **Database integration** - PostgreSQL instead of in-memory
-- [ ] **Authentication** - JWT-based user authentication
-- [ ] **Export functionality** - Download data as CSV/Excel
-- [ ] **Real-time updates** - WebSocket for live data
-- [ ] **Dark mode** - Theme toggle
-- [ ] **Accessibility** - ARIA labels, keyboard navigation
-- [ ] **Performance optimization** - Virtualized table for large datasets
-- [ ] **Docker deployment** - Containerization for easy deployment
-- [ ] **CI/CD pipeline** - Automated testing and deployment
+1. **Service Layer Pattern** - Business logic separated from routes
+2. **In-memory caching** - Data loaded once at startup
+3. **Context + Hooks** - Centralized state management
+4. **camelCase API** - Frontend types match API response exactly
+5. **Graceful fallbacks** - Excel → JSON fallback
 
 ## 🐛 Troubleshooting
 
-### Backend won't start
-
+**Backend won't start:**
 ```bash
-# Check Python version
-python --version  # Should be 3.9+
-
-# Reinstall dependencies
 cd backend
 pip install --upgrade -r requirements.txt
 ```
 
-### Frontend won't start
-
+**Frontend won't start:**
 ```bash
-# Check Node version
-node --version  # Should be 18+
-
-# Clear cache and reinstall
 cd frontend
-rm -rf node_modules package-lock.json
+rm -rf node_modules
 npm install
 ```
 
-### CORS errors
+**CORS errors:** Ensure backend on port 8000, frontend on 5173.
 
-Ensure the backend is running on port 8000 and frontend on 5173. CORS is configured for these specific ports.
+## ⏱ Time Spent
 
-### Data not loading
+- Backend: ~1.5 hours
+- Frontend: ~2 hours  
+- Bonus features: ~1 hour
+- **Total: ~4.5 hours**
 
-1. Verify backend is running: http://localhost:8000/health
-2. Check browser console for errors
-3. Ensure `mockKolData.json` exists in `backend/app/data/`
+## 📄 What I'd Improve
 
-## 📄 License
-
-This is a technical test project. No license specified.
-
-## 👤 Developer Notes
-
-### Time Spent
-
-- Backend setup and API implementation: ~1.5 hours
-- Frontend structure and components: ~2 hours
-- Integration, testing, and documentation: ~0.5 hours
-- **Total: ~4 hours**
-
-### Trade-offs Made
-
-1. **In-memory data** instead of database - Faster for prototype, not scalable
-2. **Recharts** instead of D3.js - Quicker implementation, less control
-3. **No pagination** - Works for 50 records, would need for larger datasets
-4. **Basic error handling** - Production would need more sophisticated retry logic
-5. **No tests** - Prioritized working features over test coverage in time constraint
-
-### What I'd Do Differently
-
-- Add comprehensive test suite first (TDD approach)
-- Implement database layer from the start for scalability
-- Use React Query for better data fetching/caching
-- Add proper logging (Winston/Pino for backend, custom logger for frontend)
-- Implement feature flags for bonus features
-- Set up monitoring (Sentry, DataDog)
+- Add unit tests (pytest, Vitest)
+- Database integration (PostgreSQL)
+- Docker deployment
+- Authentication
+- Dark mode
 
 ---
 
-**Built with ❤️ for the KOL Analytics technical assessment**
+**Built for the KOL Analytics Technical Assessment** 🚀

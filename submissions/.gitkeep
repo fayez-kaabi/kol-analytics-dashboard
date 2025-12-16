@@ -1,0 +1,30 @@
+# Submissions Directory
+
+Place your submission in this directory with the following structure:
+
+```
+submissions/
+└── <your_name>/
+    ├── README.md           # Your development log
+    ├── frontend/           # React + TypeScript frontend
+    │   ├── package.json
+    │   ├── tsconfig.json
+    │   ├── vite.config.ts
+    │   └── src/
+    └── backend/            # FastAPI backend
+        ├── requirements.txt
+        ├── app/
+        └── data/
+```
+
+## Submission Instructions
+
+1. Create a folder with your name: `submissions/your_name/`
+2. Place your frontend and backend code in this folder
+3. Include a README.md documenting:
+   - Installation instructions
+   - How to run your application
+   - Time spent on each step
+   - Challenges encountered
+   - Potential improvements
+4. Submit as a zip file or Git repository
