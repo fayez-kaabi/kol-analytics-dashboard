@@ -10,6 +10,7 @@ import { useKolContext } from '../context/KolContext';
 import { StatCards } from '../components/StatCards';
 import { CountriesBarChart } from '../components/CountriesBarChart';
 import { ExpertisePieChart } from '../components/ExpertisePieChart';
+import { ScatterPlotChart } from '../components/ScatterPlotChart';
 import { KolTableWithSearch } from '../components/KolTableWithSearch';
 import { KolDetails } from '../components/KolDetails';
 
@@ -83,6 +84,11 @@ export function Dashboard(): JSX.Element {
                 <ExpertisePieChart kols={kols} />
               )}
             </div>
+
+            {/* Scatter Plot (BONUS: Third visualization) */}
+            {kols.length > 0 && (
+              <ScatterPlotChart kols={kols} />
+            )}
 
             {/* Insights Section */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
