@@ -164,14 +164,36 @@ npm install
 - Bonus features: ~1.5 hours
 - **Total: ~5 hours**
 
-## 📄 What I'd Improve
+## 💡 Assumptions Made
 
-- Add unit tests (pytest, Vitest)
-- Database integration (PostgreSQL)
-- Docker deployment
-- Authentication
-- Dark mode
-- Fetch citation data for Excel KOLs (from external API)
+- **Citations may be missing** in real Excel data → handled as `null`, UI shows empty state
+- **Expertise categories can explode** (100+ unique) → show top 8 + "Other" in pie chart
+- **Country fields may be empty/unknown** → normalized to "Unknown" bucket
+- **H-Index proxy** → used "Number of occurrence" from Excel as h-index approximation
+- **No authentication required** → public dashboard for demo purposes
+
+## 📄 What I'd Improve (Given More Time)
+
+- **Move in-memory → PostgreSQL/Redis** for persistence and caching
+- **Server-side pagination** for 100K+ records (currently frontend-only)
+- **Add tests** - pytest for API + Excel parser, Vitest for React components
+- **Observability** - structured logging, Prometheus metrics, Sentry errors
+- **Improve Excel mapping** - validation report, handle more column variations
+- **Docker Compose** - one-command setup for entire stack
+- **CI/CD pipeline** - GitHub Actions for automated testing/deployment
+- **Export functionality** - download filtered KOL data as CSV
+
+## 🏃 Quick Run (Copy/Paste)
+
+```bash
+# Terminal 1: Backend
+cd backend && pip install -r requirements.txt && uvicorn app.main:app --reload --port 8000
+
+# Terminal 2: Frontend  
+cd frontend && npm install && npm run dev
+```
+
+Then open: **http://localhost:5173**
 
 ---
 
