@@ -156,17 +156,33 @@ These insights help identify areas where data collection or validation could be 
 4. **Responsive grid layouts** - Mobile-first design with Tailwind
 5. **Error boundaries** - Graceful degradation when API is unavailable
 
-## 📝 TODO / Future Improvements
+## 🎁 BONUS Features Implemented
 
-### BONUS Features (Not Implemented)
+### ✅ Advanced Filtering
+- **Search functionality** - Filter KOLs by name, affiliation, country, expertise
+- **Multi-select dropdowns** - Filter by country and expertise area
+- **Clear filters** button with visual feedback
+- **Result counter** showing filtered vs total KOLs
 
-The following bonus features from the technical test are explicitly left as TODO:
+### ✅ Additional Visualizations
+- **Pie chart** - KOL distribution by expertise area with percentages
+- **Scatter plot** - Publications vs Citations analysis with H-Index as bubble size
+- **Interactive tooltips** on all charts with detailed information
+- **Key insights** sections explaining what the visualizations show
 
-- [ ] **Excel parsing** - Currently uses JSON; could parse the provided .xlsx file
-- [ ] **Advanced filtering** - Search, multi-select dropdowns, range sliders
-- [ ] **Backend pagination/sorting** - Query parameters for large datasets
-- [ ] **Additional visualizations** - Pie charts, scatter plots, sortable tables
-- [ ] **D3.js implementation** - Replace Recharts with raw D3 for more control
+### ✅ Backend Pagination/Filtering/Sorting
+- **Query parameters** for `/api/kols` endpoint:
+  - `country` - Filter by country
+  - `expertise_area` - Filter by expertise
+  - `search` - Search in name/affiliation
+  - `sort_by` - Sort by publications_count, citations, h_index, or name
+  - `order` - asc or desc
+  - `limit` & `offset` - Pagination support
+- **Full validation** and error handling for query parameters
+
+### 📝 Not Implemented (Optional)
+- [ ] **Excel parsing** - Currently uses JSON
+- [ ] **D3.js implementation** - Using Recharts (simpler, sufficient for this scope)
 
 ### Additional Improvements (Given More Time)
 
