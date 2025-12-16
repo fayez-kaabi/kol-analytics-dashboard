@@ -147,9 +147,6 @@ export function CountriesBarChartD3({ data }: CountriesBarChartD3Props): JSX.Ele
     // Tooltip
     const tooltip = d3.select(tooltipRef.current);
 
-    // Get the container's position for tooltip positioning
-    const containerRect = svgRef.current.getBoundingClientRect();
-
     bars
       .on('mouseover', function(event, d) {
         // Highlight bar
@@ -159,23 +156,18 @@ export function CountriesBarChartD3({ data }: CountriesBarChartD3Props): JSX.Ele
           .style('opacity', 1)
           .style('filter', 'brightness(1.1)');
 
-        // Calculate position relative to the bar
-        const barX = (xScale(d.country) || 0) + margin.left + xScale.bandwidth() / 2;
-        const barY = yScale(d.count) + margin.top - 10;
-
-        // Show tooltip centered above the bar
+        // Show tooltip next to cursor
         tooltip
           .style('display', 'block')
-          .style('left', `${containerRect.left + barX}px`)
-          .style('top', `${containerRect.top + barY + window.scrollY}px`)
-          .style('transform', 'translate(-50%, -100%)')
+          .style('left', `${event.pageX + 15}px`)
+          .style('top', `${event.pageY - 15}px`)
           .html(`
             <div style="
               background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
               border-radius: 12px;
               padding: 16px 24px;
               box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-              min-width: 160px;
+              min-width: 140px;
               text-align: center;
             ">
               <p style="
@@ -197,6 +189,12 @@ export function CountriesBarChartD3({ data }: CountriesBarChartD3Props): JSX.Ele
               ">${d.count.toLocaleString()}</p>
             </div>
           `);
+      })
+      .on('mousemove', function(event) {
+        // Keep tooltip following cursor
+        tooltip
+          .style('left', `${event.pageX + 15}px`)
+          .style('top', `${event.pageY - 15}px`);
       })
       .on('mouseout', function() {
         // Reset bar
