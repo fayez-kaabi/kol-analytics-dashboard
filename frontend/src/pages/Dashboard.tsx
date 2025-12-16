@@ -9,7 +9,7 @@ import { useKolStats } from '../hooks/useKolStats';
 import { useKolContext } from '../context/KolContext';
 import { StatCards } from '../components/StatCards';
 import { CountriesBarChart } from '../components/CountriesBarChart';
-import { KolTable } from '../components/KolTable';
+import { KolTableWithSearch } from '../components/KolTableWithSearch';
 import { KolDetails } from '../components/KolDetails';
 
 export function Dashboard(): JSX.Element {
@@ -129,9 +129,9 @@ export function Dashboard(): JSX.Element {
           </>
         )}
 
-        {/* KOL Table */}
+        {/* KOL Table with Search (BONUS: Advanced Filtering) */}
         {kols.length > 0 && (
-          <KolTable
+          <KolTableWithSearch
             kols={kols}
             onSelectKol={setSelectedKolId}
             selectedKolId={selectedKolId}
