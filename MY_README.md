@@ -56,11 +56,12 @@ npm run dev
 
 ### Core Features
 - ✅ **REST API** with FastAPI + Pydantic validation
-- ✅ **Dashboard** with summary statistics cards
-- ✅ **Interactive bar chart** (D3.js) with tooltips
-- ✅ **KOL table** with click-to-view details
+- ✅ **Dashboard** with summary statistics cards (SVG outline icons)
+- ✅ **Interactive bar chart** (D3.js) with tooltips & animations
+- ✅ **KOL table** with pagination (7 rows), search, filtering
+- ✅ **KOL details modal** on row click
 - ✅ **Loading/error states** throughout
-- ✅ **TypeScript strict mode** (no `any`)
+- ✅ **TypeScript strict mode** (no `any`, all types defined)
 - ✅ **Responsive design** with Tailwind CSS
 
 ### API Endpoints
@@ -74,10 +75,11 @@ npm run dev
 ## 🎁 BONUS Features (ALL Implemented!)
 
 ### 1. ✅ Advanced Filtering
-- Search by name, affiliation, country, expertise
+- Search by name, affiliation, country, expertise (with 300ms debounce)
 - Dropdown filters for country and expertise area
 - Clear filters button
 - Result counter (X of Y KOLs)
+- Frontend pagination (7 rows per page)
 
 ### 2. ✅ Additional Visualizations
 - **Pie chart** - KOL distribution by expertise
