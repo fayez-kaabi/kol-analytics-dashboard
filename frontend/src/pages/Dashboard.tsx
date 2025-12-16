@@ -90,7 +90,7 @@ export function Dashboard(): JSX.Element {
             )}
 
             {/* Insights Section */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8 mt-8">
               {/* Highest Impact KOL */}
               <div className="bg-white rounded-lg shadow-md p-6">
                 <h3 className="text-xl font-bold text-gray-800 mb-4">
