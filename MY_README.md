@@ -122,13 +122,17 @@ The system automatically detects and reports:
 **Backend:** FastAPI, Pydantic, Uvicorn, openpyxl  
 **Frontend:** React 18, TypeScript 5 (strict), Vite 5, Tailwind CSS, Recharts, D3.js
 
-## 📝 Design Decisions
+## 📝 Design Decisions & Tradeoffs
 
-1. **Service Layer Pattern** - Business logic separated from routes
-2. **In-memory caching** - Data loaded once at startup
-3. **Context + Hooks** - Centralized state management
-4. **camelCase API** - Frontend types match API response exactly
-5. **Graceful fallbacks** - Excel → JSON fallback
+| Decision | Tradeoff |
+|----------|----------|
+| **In-memory data** | Fast for 50 records, but won't scale to 10K+ KOLs. Would use PostgreSQL in production. |
+| **Service Layer Pattern** | More files/boilerplate, but business logic is testable and separated from routes. |
+| **Context + Hooks** | Simpler than Redux, but would need React Query for complex caching/invalidation. |
+| **camelCase API responses** | Frontend types match exactly, but differs from Python snake_case convention. |
+| **D3.js for one chart only** | Demonstrates raw D3 skill while keeping other charts simple with Recharts. |
+| **No database** | Faster prototype, but no persistence. Would add SQLAlchemy + migrations for production. |
+| **No tests** | Prioritized features over coverage. Would add pytest + Vitest with more time. |
 
 ## 🐛 Troubleshooting
 
