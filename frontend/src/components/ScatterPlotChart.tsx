@@ -3,7 +3,7 @@
  * BONUS FEATURE: Second visualization (scatter plot)
  */
 
-import React from 'react';
+import { useMemo } from 'react';
 import {
   ScatterChart,
   Scatter,
@@ -44,22 +44,14 @@ function CustomTooltip({ active, payload }: CustomTooltipProps): JSX.Element | n
       : 'N/A';
     
     return (
-      <div className="bg-white border border-gray-300 rounded-lg shadow-lg p-3 max-w-xs">
-        <p className="font-semibold text-gray-800 mb-2">{data.name}</p>
-        <p className="text-xs text-gray-600">{data.country}</p>
-        <div className="mt-2 space-y-1 text-sm">
-          <p className="text-gray-700">
-            <span className="font-medium">Publications:</span> {data.publications}
-          </p>
-          <p className="text-gray-700">
-            <span className="font-medium">Citations:</span> {data.citations.toLocaleString()}
-          </p>
-          <p className="text-gray-700">
-            <span className="font-medium">H-Index:</span> {data.hIndex}
-          </p>
-          <p className="text-blue-700 font-medium">
-            <span className="font-medium">Ratio:</span> {ratio}
-          </p>
+      <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-3 max-w-xs">
+        <p className="font-medium text-gray-800 mb-1">{data.name}</p>
+        <p className="text-xs text-gray-500 mb-2">{data.country}</p>
+        <div className="space-y-1 text-sm text-gray-600">
+          <p>Publications: <span className="font-medium text-gray-800">{data.publications}</span></p>
+          <p>Citations: <span className="font-medium text-gray-800">{data.citations.toLocaleString()}</span></p>
+          <p>H-Index: <span className="font-medium text-gray-800">{data.hIndex}</span></p>
+          <p>Ratio: <span className="font-medium text-slate-700">{ratio}</span></p>
         </div>
       </div>
     );
@@ -68,8 +60,7 @@ function CustomTooltip({ active, payload }: CustomTooltipProps): JSX.Element | n
 }
 
 export function ScatterPlotChart({ kols }: ScatterPlotChartProps): JSX.Element {
-  // Prepare data for scatter plot (filter out KOLs with missing data)
-  const scatterData: ScatterDataPoint[] = React.useMemo(() => {
+  const scatterData: ScatterDataPoint[] = useMemo(() => {
     return kols
       .filter(kol => 
         kol.publicationsCount !== null && 
@@ -86,42 +77,40 @@ export function ScatterPlotChart({ kols }: ScatterPlotChartProps): JSX.Element {
   }, [kols]);
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <h2 className="text-2xl font-bold text-gray-800 mb-2">
+    <div className="bg-white rounded-lg border border-gray-200 p-6 mb-8">
+      <h2 className="text-base font-semibold text-gray-800 mb-1">
         Publications vs Citations Analysis
       </h2>
-      <p className="text-sm text-gray-600 mb-6">
-        Each dot represents a KOL. Hover to see details. Size indicates H-Index.
+      <p className="text-xs text-gray-500 mb-6">
+        Each point represents a KOL. Size indicates H-Index.
       </p>
       
-      <ResponsiveContainer width="100%" height={400}>
-        <ScatterChart
-          margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
-        >
+      <ResponsiveContainer width="100%" height={350}>
+        <ScatterChart margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
           <XAxis
             type="number"
             dataKey="publications"
             name="Publications"
             label={{
-              value: 'Number of Publications',
+              value: 'Publications',
               position: 'bottom',
               offset: 10,
-              style: { fontSize: 14, fill: '#4b5563' },
+              style: { fontSize: 12, fill: '#64748b' },
             }}
-            tick={{ fontSize: 12, fill: '#4b5563' }}
+            tick={{ fontSize: 11, fill: '#64748b' }}
           />
           <YAxis
             type="number"
             dataKey="citations"
             name="Citations"
             label={{
-              value: 'Total Citations',
+              value: 'Citations',
               angle: -90,
               position: 'insideLeft',
-              style: { fontSize: 14, fill: '#4b5563' },
+              style: { fontSize: 12, fill: '#64748b' },
             }}
-            tick={{ fontSize: 12, fill: '#4b5563' }}
+            tick={{ fontSize: 11, fill: '#64748b' }}
           />
           <ZAxis 
             type="number" 
@@ -135,56 +124,39 @@ export function ScatterPlotChart({ kols }: ScatterPlotChartProps): JSX.Element {
           />
           <Legend 
             wrapperStyle={{ paddingTop: '20px' }}
-            payload={[
-              { 
-                value: 'KOLs (size = H-Index)', 
-                type: 'circle', 
-                color: '#3b82f6' 
-              }
-            ]}
+            payload={[{ value: 'KOLs (size = H-Index)', type: 'circle', color: '#64748b' }]}
           />
           <Scatter 
             name="KOLs" 
             data={scatterData} 
-            fill="#3b82f6"
-            fillOpacity={0.6}
+            fill="#64748b"
+            fillOpacity={0.5}
           />
         </ScatterChart>
       </ResponsiveContainer>
 
       {/* Key Insights */}
-      <div className="mt-6 pt-6 border-t border-gray-200">
-        <h3 className="font-semibold text-gray-800 mb-3">Key Insights</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
-          <div className="flex items-start">
-            <span className="text-blue-600 mr-2">📈</span>
-            <p>
-              <strong>Positive correlation:</strong> More publications generally lead to more citations
-            </p>
+      <div className="mt-6 pt-4 border-t border-gray-100">
+        <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">Key Insights</p>
+        <div className="grid grid-cols-2 gap-3 text-xs text-gray-600">
+          <div className="flex items-start gap-2">
+            <span className="text-slate-400">→</span>
+            <p><span className="font-medium text-gray-700">Positive correlation:</span> More publications generally lead to more citations</p>
           </div>
-          <div className="flex items-start">
-            <span className="text-green-600 mr-2">💡</span>
-            <p>
-              <strong>Outliers above trend:</strong> High impact researchers with exceptional citation ratios
-            </p>
+          <div className="flex items-start gap-2">
+            <span className="text-slate-400">→</span>
+            <p><span className="font-medium text-gray-700">Outliers above trend:</span> High impact researchers with exceptional citation ratios</p>
           </div>
-          <div className="flex items-start">
-            <span className="text-purple-600 mr-2">🎯</span>
-            <p>
-              <strong>Bubble size:</strong> Larger bubbles indicate higher H-Index (research impact)
-            </p>
+          <div className="flex items-start gap-2">
+            <span className="text-slate-400">→</span>
+            <p><span className="font-medium text-gray-700">Bubble size:</span> Larger bubbles indicate higher H-Index (research impact)</p>
           </div>
-          <div className="flex items-start">
-            <span className="text-orange-600 mr-2">⭐</span>
-            <p>
-              <strong>Top right quadrant:</strong> Most prolific and cited researchers
-            </p>
+          <div className="flex items-start gap-2">
+            <span className="text-slate-400">→</span>
+            <p><span className="font-medium text-gray-700">Top right quadrant:</span> Most prolific and cited researchers</p>
           </div>
         </div>
       </div>
     </div>
   );
 }
-
-
-

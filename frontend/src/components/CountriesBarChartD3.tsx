@@ -72,12 +72,12 @@ export function CountriesBarChartD3({ data }: CountriesBarChartD3Props): JSX.Ele
       .nice()
       .range([height, 0]);
 
-    // Color scale
+    // Color scale - professional muted palette
     const colorScale = d3.scaleOrdinal<string>()
       .domain(data.map((_, i) => i.toString()))
       .range([
-        '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6',
-        '#ec4899', '#14b8a6', '#f97316', '#6366f1', '#84cc16'
+        '#475569', '#64748b', '#78716c', '#71717a', '#6b7280',
+        '#525252', '#57534e', '#44403c', '#52525b', '#3f3f46'
       ]);
 
     // Grid lines
@@ -190,12 +190,12 @@ export function CountriesBarChartD3({ data }: CountriesBarChartD3Props): JSX.Ele
   }, [data, dimensions]);
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
+    <div className="bg-white rounded-lg border border-gray-200 p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">
+        <h2 className="text-base font-semibold text-gray-800">
           Top 10 Countries by KOL Count
         </h2>
-        <span className="px-3 py-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-semibold rounded-full">
+        <span className="px-2 py-1 bg-slate-100 text-slate-600 text-xs font-medium rounded border border-slate-200">
           D3.js
         </span>
       </div>
@@ -209,11 +209,8 @@ export function CountriesBarChartD3({ data }: CountriesBarChartD3Props): JSX.Ele
         ></div>
       </div>
 
-      <div className="mt-4 text-sm text-gray-600">
-        <p className="flex items-center">
-          <span className="inline-block w-3 h-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mr-2"></span>
-          Built with raw D3.js (no wrapper library) • Hover for details
-        </p>
+      <div className="mt-4 text-xs text-gray-400">
+        Built with raw D3.js • Hover for details
       </div>
     </div>
   );
