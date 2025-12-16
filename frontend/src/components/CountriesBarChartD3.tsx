@@ -154,47 +154,26 @@ export function CountriesBarChartD3({ data }: CountriesBarChartD3Props): JSX.Ele
           .transition()
           .duration(200)
           .style('opacity', 1)
-          .style('filter', 'brightness(1.1)');
+          .attr('transform', 'scale(1.05)');
 
-        // Show tooltip next to cursor
+        // Show tooltip
         tooltip
           .style('display', 'block')
-          .style('left', `${event.pageX + 15}px`)
-          .style('top', `${event.pageY - 15}px`)
+          .style('left', `${event.pageX + 10}px`)
+          .style('top', `${event.pageY - 10}px`)
           .html(`
-            <div style="
-              background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
-              border-radius: 12px;
-              padding: 16px 24px;
-              box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-              min-width: 140px;
-              text-align: center;
-            ">
-              <p style="
-                font-size: 18px;
-                font-weight: 700;
-                color: white;
-                margin: 0 0 8px 0;
-              ">${d.country}</p>
-              <p style="
-                font-size: 14px;
-                color: rgba(255,255,255,0.8);
-                margin: 0;
-              ">KOLs</p>
-              <p style="
-                font-size: 32px;
-                font-weight: 800;
-                color: #fbbf24;
-                margin: 4px 0 0 0;
-              ">${d.count.toLocaleString()}</p>
+            <div class="bg-white border border-gray-300 rounded-lg shadow-lg p-3">
+              <p class="font-semibold text-gray-800">${d.country}</p>
+              <p class="text-sm text-gray-600">
+                KOLs: <span class="font-bold text-blue-600">${d.count}</span>
+              </p>
             </div>
           `);
       })
       .on('mousemove', function(event) {
-        // Keep tooltip following cursor
         tooltip
-          .style('left', `${event.pageX + 15}px`)
-          .style('top', `${event.pageY - 15}px`);
+          .style('left', `${event.pageX + 10}px`)
+          .style('top', `${event.pageY - 10}px`);
       })
       .on('mouseout', function() {
         // Reset bar
@@ -202,7 +181,7 @@ export function CountriesBarChartD3({ data }: CountriesBarChartD3Props): JSX.Ele
           .transition()
           .duration(200)
           .style('opacity', 0.9)
-          .style('filter', 'brightness(1)');
+          .attr('transform', 'scale(1)');
 
         // Hide tooltip
         tooltip.style('display', 'none');
