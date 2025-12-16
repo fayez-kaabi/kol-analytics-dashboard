@@ -8,7 +8,7 @@ export interface KOL {
   name: string;
   affiliation: string;
   country: string;
-  city: string;
+  city: string | null;  // Optional - not always available in Excel data
   expertiseArea: string;
   publicationsCount: number | null;
   hIndex: number | null;

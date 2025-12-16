@@ -14,7 +14,7 @@ class KOL(BaseModel):
     name: str
     affiliation: str
     country: str
-    city: str
+    city: Optional[str] = None  # Optional - not always available in Excel data
     expertise_area: str = Field(alias="expertiseArea")
     publications_count: Optional[int] = Field(alias="publicationsCount", default=None)
     h_index: Optional[int] = Field(alias="hIndex", default=None)

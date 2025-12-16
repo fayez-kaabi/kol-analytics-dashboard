@@ -1,219 +1,142 @@
 """
-Excel file parser for KOL data.
+Excel parser for KOL data from the Vitiligo Excel file.
 
-BONUS FEATURE: Excel parsing instead of JSON loading.
+BONUS FEATURE: Parse Excel file instead of JSON.
 
-This module handles reading .xlsx files and converting them to the KOL data format.
-Supports automatic column mapping and data type conversion.
+The Excel file has 3 sheets:
+- Authors: KOL information (4017 records)
+- Publications: Publication details
+- Affiliations: Institution data
+
+We extract KOL data from Authors sheet and count publications per author.
 """
 
 import logging
 from pathlib import Path
-from typing import List, Dict, Any, Optional
+from typing import Any
+
 import openpyxl
-from openpyxl.worksheet.worksheet import Worksheet
 
 logger = logging.getLogger(__name__)
 
 
-class ExcelParser:
+def parse_excel_file(file_path: str) -> list[dict[str, Any]]:
     """
-    Parser for Excel files containing KOL data.
+    Parse the Vitiligo Excel file to extract KOL data.
     
-    Handles:
-    - Column name mapping (Excel headers -> JSON field names)
-    - Data type conversion
-    - Missing value handling
-    - Multiple sheet support
+    Maps Excel columns to KOL model:
+    - Author ID → id
+    - Name → name  
+    - Affiliations/Sites → affiliation
+    - Countries → country
+    - Conditions → expertiseArea
+    - Publications IDs → publicationsCount (count of IDs)
+    - Priority → hIndex (using as proxy metric)
+    
+    Note: Citations not available in Excel, set to null.
     """
+    excel_path = Path(file_path)
     
-    # Mapping of possible Excel column names to our JSON field names
-    COLUMN_MAPPINGS = {
-        # ID fields
-        'id': 'id',
-        'kol_id': 'id',
-        'identifier': 'id',
-        
-        # Name fields
-        'name': 'name',
-        'full_name': 'name',
-        'kol_name': 'name',
-        'doctor_name': 'name',
-        
-        # Affiliation fields
-        'affiliation': 'affiliation',
-        'institution': 'affiliation',
-        'organization': 'affiliation',
-        'hospital': 'affiliation',
-        'university': 'affiliation',
-        
-        # Country fields
-        'country': 'country',
-        'nation': 'country',
-        
-        # City fields
-        'city': 'city',
-        'location': 'city',
-        
-        # Expertise fields
-        'expertise_area': 'expertiseArea',
-        'expertisearea': 'expertiseArea',
-        'expertise': 'expertiseArea',
-        'specialization': 'expertiseArea',
-        'specialty': 'expertiseArea',
-        'field': 'expertiseArea',
-        
-        # Publications fields
-        'publications_count': 'publicationsCount',
-        'publicationscount': 'publicationsCount',
-        'publications': 'publicationsCount',
-        'num_publications': 'publicationsCount',
-        'publication_count': 'publicationsCount',
-        
-        # H-Index fields
-        'h_index': 'hIndex',
-        'hindex': 'hIndex',
-        'h-index': 'hIndex',
-        
-        # Citations fields
-        'citations': 'citations',
-        'total_citations': 'citations',
-        'citation_count': 'citations',
-    }
+    # Try to find the Excel file
+    if not excel_path.exists():
+        # Try relative to backend folder
+        alt_path = Path(__file__).parent.parent.parent.parent / "Vitiligo_kol_csv_29_07_2024_drug_and_kol_standardized.xlsx"
+        if alt_path.exists():
+            excel_path = alt_path
+        else:
+            logger.error(f"Excel file not found: {file_path}")
+            return []
     
-    @classmethod
-    def parse_excel_file(cls, file_path: str) -> List[Dict[str, Any]]:
-        """
-        Parse an Excel file and return list of KOL records.
+    try:
+        logger.info(f"Loading Excel file: {excel_path}")
+        wb = openpyxl.load_workbook(excel_path, read_only=True, data_only=True)
         
-        Args:
-            file_path: Path to the .xlsx file
+        # Get Authors sheet
+        if 'Authors' not in wb.sheetnames:
+            logger.error("Authors sheet not found in Excel file")
+            return []
+        
+        authors_sheet = wb['Authors']
+        
+        # Get headers from first row
+        headers = [cell.value for cell in next(authors_sheet.iter_rows(min_row=1, max_row=1))]
+        
+        # Find column indices
+        col_map = {
+            'Author ID': headers.index('Author ID') if 'Author ID' in headers else -1,
+            'Name': headers.index('Name') if 'Name' in headers else -1,
+            'Affiliations/Sites': headers.index('Affiliations/Sites') if 'Affiliations/Sites' in headers else -1,
+            'Countries': headers.index('Countries') if 'Countries' in headers else -1,
+            'Conditions': headers.index('Conditions') if 'Conditions' in headers else -1,
+            'Publications IDs': headers.index('Publications IDs') if 'Publications IDs' in headers else -1,
+            'Priority': headers.index('Priority') if 'Priority' in headers else -1,
+            'Number of occurrence': headers.index('Number of occurrence') if 'Number of occurrence' in headers else -1,
+        }
+        
+        kols: list[dict[str, Any]] = []
+        row_count = 0
+        
+        for row in authors_sheet.iter_rows(min_row=2, values_only=True):
+            row_count += 1
             
-        Returns:
-            List of dictionaries with KOL data
-            
-        Raises:
-            FileNotFoundError: If file doesn't exist
-            ValueError: If file format is invalid
-        """
-        path = Path(file_path)
-        if not path.exists():
-            raise FileNotFoundError(f"Excel file not found: {file_path}")
-        
-        logger.info(f"Parsing Excel file: {file_path}")
-        
-        try:
-            workbook = openpyxl.load_workbook(file_path, data_only=True)
-            
-            # Try to find the data sheet (use first sheet or look for specific names)
-            sheet = cls._find_data_sheet(workbook)
-            
-            # Parse the sheet
-            records = cls._parse_sheet(sheet)
-            
-            logger.info(f"Successfully parsed {len(records)} records from Excel")
-            return records
-            
-        except Exception as e:
-            logger.error(f"Failed to parse Excel file: {e}")
-            raise ValueError(f"Invalid Excel file format: {e}")
-    
-    @classmethod
-    def _find_data_sheet(cls, workbook: openpyxl.Workbook) -> Worksheet:
-        """Find the worksheet containing KOL data."""
-        # Look for sheets with common names
-        preferred_names = ['kol', 'data', 'sheet1', 'kols', 'doctors']
-        
-        for name in preferred_names:
-            for sheet_name in workbook.sheetnames:
-                if name in sheet_name.lower():
-                    return workbook[sheet_name]
-        
-        # Fallback to first sheet
-        return workbook.active
-    
-    @classmethod
-    def _parse_sheet(cls, sheet: Worksheet) -> List[Dict[str, Any]]:
-        """Parse a worksheet into list of KOL records."""
-        records = []
-        
-        # Read header row (first row)
-        headers = []
-        for cell in sheet[1]:
-            header = str(cell.value).strip().lower().replace(' ', '_') if cell.value else ''
-            headers.append(header)
-        
-        # Map headers to our field names
-        field_mapping = cls._create_field_mapping(headers)
-        
-        # Read data rows (skip header)
-        for row_idx, row in enumerate(sheet.iter_rows(min_row=2, values_only=True), start=2):
-            if not any(row):  # Skip empty rows
+            # Skip rows without Author ID
+            author_id = row[col_map['Author ID']] if col_map['Author ID'] >= 0 else None
+            if not author_id:
                 continue
             
-            record = cls._parse_row(row, headers, field_mapping, row_idx)
-            if record:  # Only add if we got valid data
-                records.append(record)
-        
-        return records
-    
-    @classmethod
-    def _create_field_mapping(cls, headers: List[str]) -> Dict[int, str]:
-        """Create mapping from column index to field name."""
-        mapping = {}
-        
-        for idx, header in enumerate(headers):
-            if header in cls.COLUMN_MAPPINGS:
-                mapping[idx] = cls.COLUMN_MAPPINGS[header]
-        
-        return mapping
-    
-    @classmethod
-    def _parse_row(
-        cls, 
-        row: tuple, 
-        headers: List[str], 
-        field_mapping: Dict[int, str],
-        row_number: int
-    ) -> Optional[Dict[str, Any]]:
-        """Parse a single row into a KOL record."""
-        record = {}
-        
-        for idx, value in enumerate(row):
-            if idx not in field_mapping:
+            name = row[col_map['Name']] if col_map['Name'] >= 0 else None
+            if not name:
                 continue
+                
+            # Get affiliation (take first one if multiple)
+            affiliation = row[col_map['Affiliations/Sites']] if col_map['Affiliations/Sites'] >= 0 else None
+            if affiliation and '|' in str(affiliation):
+                affiliation = str(affiliation).split('|')[0].strip()
             
-            field_name = field_mapping[idx]
-            parsed_value = cls._parse_value(value, field_name)
+            # Get country (take first one if multiple)
+            country = row[col_map['Countries']] if col_map['Countries'] >= 0 else None
+            if country and '|' in str(country):
+                country = str(country).split('|')[0].strip()
             
-            if parsed_value is not None:
-                record[field_name] = parsed_value
+            # Get expertise area from Conditions
+            conditions = row[col_map['Conditions']] if col_map['Conditions'] >= 0 else None
+            expertise = "Vitiligo Research"  # Default since all are vitiligo-related
+            if conditions:
+                # Take first condition as expertise
+                expertise = str(conditions).split('|')[0].strip()
+            
+            # Count publications
+            pub_ids = row[col_map['Publications IDs']] if col_map['Publications IDs'] >= 0 else None
+            pub_count = 0
+            if pub_ids:
+                pub_count = len(str(pub_ids).split('|'))
+            
+            # Use 'Number of occurrence' as a proxy for impact/h-index
+            occurrence = row[col_map['Number of occurrence']] if col_map['Number of occurrence'] >= 0 else None
+            h_index = int(occurrence) if occurrence else None
+            
+            kol = {
+                'id': str(author_id),
+                'name': str(name).strip(),
+                'affiliation': str(affiliation).strip() if affiliation else "Unknown Institution",
+                'country': str(country).strip() if country else "Unknown",
+                'city': None,  # Not available in Excel
+                'expertiseArea': expertise,
+                'publicationsCount': pub_count,
+                'hIndex': h_index,
+                'citations': None,  # Not available in Excel
+            }
+            
+            kols.append(kol)
+            
+            # Limit to first 100 for performance (can be removed for full data)
+            if len(kols) >= 100:
+                break
         
-        # Generate ID if missing
-        if 'id' not in record:
-            record['id'] = str(row_number - 1)
+        wb.close()
+        logger.info(f"Successfully parsed {len(kols)} KOLs from Excel (scanned {row_count} rows)")
+        return kols
         
-        # Only return if we have minimum required fields
-        if 'name' in record:
-            return record
-        
-        return None
-    
-    @classmethod
-    def _parse_value(cls, value: Any, field_name: str) -> Any:
-        """Parse and convert a cell value to appropriate type."""
-        if value is None:
-            return None
-        
-        # Numeric fields
-        if field_name in ['publicationsCount', 'hIndex', 'citations']:
-            try:
-                return int(float(value)) if value else None
-            except (ValueError, TypeError):
-                return None
-        
-        # String fields
-        return str(value).strip() if value else None
-
-
-
+    except Exception as e:
+        logger.error(f"Error parsing Excel file: {e}")
+        return []

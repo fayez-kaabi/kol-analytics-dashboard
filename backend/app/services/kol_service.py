@@ -10,7 +10,7 @@ from app.models.stats import KOLStats, CountryCount, HighestCitationsPerPublicat
 
 # Import Excel parser (optional dependency)
 try:
-    from app.services.excel_parser import ExcelParser
+    from app.services.excel_parser import parse_excel_file
     EXCEL_AVAILABLE = True
 except ImportError:
     EXCEL_AVAILABLE = False
@@ -61,11 +61,12 @@ class KOLService:
             excel_path = path if path.suffix.lower() in ['.xlsx', '.xls'] else None
             
             if not excel_path:
-                # Try to find .xlsx file with similar name
+                # Try to find .xlsx file - check project root and data folder
+                project_root = path.parent.parent.parent.parent  # backend/app/data -> root
                 excel_candidates = [
+                    project_root / "Vitiligo_kol_csv_29_07_2024_drug_and_kol_standardized.xlsx",
                     path.parent / f"{path.stem}.xlsx",
                     path.parent / "mockKolData.xlsx",
-                    path.parent / "Vitiligo_kol_csv_29_07_2024_drug_and_kol_standardized.xlsx",
                 ]
                 for candidate in excel_candidates:
                     if candidate.exists():
@@ -75,7 +76,7 @@ class KOLService:
             if excel_path and excel_path.exists():
                 try:
                     logger.info(f"Attempting to load data from Excel: {excel_path}")
-                    raw_data = ExcelParser.parse_excel_file(str(excel_path))
+                    raw_data = parse_excel_file(str(excel_path))
                     logger.info(f"Successfully loaded {len(raw_data)} records from Excel")
                 except Exception as e:
                     logger.warning(f"Failed to load Excel file: {e}. Falling back to JSON.")
